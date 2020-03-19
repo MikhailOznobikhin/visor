@@ -1,0 +1,54 @@
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+}
+
+canvas {
+    height: 100%;
+    width: 100%;
+    background: url(img.jpg) no-repeat; 
+    background-size: 100% 100%;
+  
+}
+
+.block{
+    position: absolute;
+    border-radius: 5px;
+    background-color: crimson;
+    opacity: 0.7;  
+}
+
+.del_img{
+    float: right;
+    width: 25px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.open_nav { 
+    position: absolute;
+    background: grey;
+    top: 85%; 
+    margin-left: 30px; 
+    user-select: none; 
+}
+
+.open_nav:hover{
+    background-color: darkcyan;
+    transition: .3s;
+}
+
+.modal_o{
+    position: absolute;
+    height: 50%;
+    width: 50%;
+    background: chocolate;
+    top: 25%;
+    left: 25%;
+    margin-right: -50%;
+    border-radius: 5px;
+}
