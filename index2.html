@@ -17,8 +17,8 @@
     </head>
 
     <body >
-        <!-- <nav class="navmenu navmenu-inverse" role="navigation"></nav> -->
-        <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
+        <!-- offcanvas -->
+        <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" data-autohide=false role="navigation">
             <a class="navmenu-brand" href="#">Brand</a>
           
             <ul class="nav navmenu-nav flex-column">
@@ -26,10 +26,13 @@
               <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
             </ul>
+
+            <button class="btn btn-primary add_screen">Add screen</button>
           </nav>
           
          
-            <button class="navbar-toggler open_nav" type="button" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body">
+          <!-- data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" -->
+            <button class="navbar-toggler open_nav" type="button" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" >
                 <i class="material-icons">forward</i>
             </button>
          
@@ -37,7 +40,30 @@
 
 
 
-  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal fade" id="modal_1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Выбор метрики</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <select id="select_metric" class="selectpicker" data-style="btn-primary" data-live-search="true">
+
+            </select> 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="modal_2">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -49,16 +75,17 @@
         <div class="modal-body">
             <select class="selectpicker" data-style="btn-primary">
                 <option>Mustard</option>
-                <option>Maztard</option>
-                <option>Mretard</option>
-                <option>Ketchup</option>
-                <option>Ketard</option>
-                <option>Ketcish</option>
-                <option>Relish</option>
-                <option>Retard</option>
-                <option>Rechup</option>
+                <option>Mustard</option>
+                <option>Mustard</option>
             </select> 
+
+            <div class="custom-file add_screen_label">
+                <input type="file" class="custom-file-input" id="customFile">
+                <label class="custom-file-label" for="customFile">Выберите файл</label>
+            </div>
+
         </div>
+    
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
@@ -67,6 +94,7 @@
     </div>
   </div>
 
+  
 <!-- Рисование онлайн -->
 <script type='text/javascript'>
         let canvas = document.createElement("canvas")
@@ -163,26 +191,86 @@
             }
 
         if(width > 3 && height > 3){
-            let elem = $(`<div class="block" data-toggle="modal" data-target="#exampleModalLong" sel_index=${selection_index}><i class="material-icons del_img">highlight_off</i></div>`);
+            let elem = $(`<div class="block" sel_index=${selection_index}><i class="material-icons del_img">highlight_off</i></div>`);
             $('div.main').append(elem);
             let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
             elem.css(position);     
 
             selections[selection_index] = position;
-            // console.log(position);
             canDrawSelection = false;    
             ++selection_index;                   
-        }else{console.log('Слишком маленькая область')}
+        }
+        // else{console.log('Слишком маленькая область')}
     });
 
     $('body').on('click', '.del_img', function() {
-        console.log('вызов удаления');
         let parent = event.target.closest('div');
         delete selections[$(parent).attr('sel_index')]
         parent.remove()
     });
 
  </script>
+
+<!-- Открытие модальных окон -->
+<script type="text/javascript">
+    $('body').on('click', 'div.block', function(event) {
+        if ( event.target.children.length != 0   ) { $("#modal_1").modal('show');  }
+    });
+    
+    $('body').on('click', 'button.add_screen', function(event) {
+        $("#modal_2").modal('show');  
+    });
+</script>
+
+<!-- Боковое меню -->
+<!-- <script>
+function del_off(){
+    $('.navmenu').removeClass('offcanvas')
+}
+
+$('.open_nav').click(function() { 
+        if($('.navmenu').hasClass('offcanvas')){
+            setTimeout (del_off,180);
+            $('.navmenu').animate({left: '0px' }, 200); 
+            $('body').animate({left: '285px'}, 200);
+    }else{
+            $('.navmenu').animate({left: '-285px'}, 200); 
+            $('body').animate({left: '0px' 
+                }, 200);    
+    }
+</script> -->
+
+
+
+
+<!-- Запросы с сервера -->
+<script type="text/javascript">
+
+function fill_metric_modal_dropdown(metrica) {
+    $('#select_metric').append($(`<option>${metrica.next_event}</option>`));
+}
+
+function fill_dropdowns_with_metrics(metrics){
+    metrics.forEach(function(metrica, _, _) {
+        fill_metric_modal_dropdown(metrica);
+    });
+    $('.selectpicker').selectpicker('render');
+}
+
+function get_metric(){
+  let req = $.ajax({
+    type: "GET",
+    url: 'http://localhost:2113/feature-value/transitions/test',
+  }).done(function(data) {
+    fill_dropdowns_with_metrics(data);
+  });
+};  
+
+$(function() {
+    get_metric();
+});
+
+</script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
