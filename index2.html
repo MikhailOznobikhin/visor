@@ -11,13 +11,11 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/css/jasny-bootstrap.min.css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/js/jasny-bootstrap.min.js"></script>
-        
-        
+        <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
         <link href="styles.css"  rel="stylesheet">
     </head>
 
     <body >
-        <!-- offcanvas -->
         <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" data-autohide=false role="navigation">
             <a class="navmenu-brand" href="#">Brand</a>
           
@@ -30,11 +28,9 @@
             <button class="btn btn-primary add_screen">Add screen</button>
           </nav>
           
-         
-          <!-- data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" -->
-            <button class="navbar-toggler open_nav" type="button" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" >
+        <button class="navbar-toggler open_nav" type="button" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="body" >
                 <i class="material-icons">forward</i>
-            </button>
+          </button>
          
         <div class="main"></div>
 
@@ -159,11 +155,12 @@
     let mass_xywh = [];
     let selections = {};
     let selection_index = 0;
+    let index;
          
     $(document).mousedown(
-        function(e){
-            x = e.pageX;        
-            y = e.pageY;                  
+        function(e){ 
+          x = e.pageX;  
+          y = e.pageY;                  
     });   
 
     $(document).mouseup( 
@@ -171,43 +168,78 @@
             var Xend = e.pageX;        
             var Yend = e.pageY;
             width  = Xend - x;
-            height = Yend - y;
-                    
+            height = Yend - y;   
             maxH = document.body.clientHeight;
             maxW = document.body.clientWidth;
-
             x = x/maxW*100;
             y = y/maxH*100;
             width = width/maxW*100;
             height = height/maxH*100;
+            if(width < 0){ width = Math.abs(width); x = x - width;}
+            if(height < 0){height = Math.abs(height); y = y - height; }
+            if(width > 3 && height > 3){
 
-            if(width < 0){
-                width = Math.abs(width);
-                x = x - width;
+                $.ajax({
+                  type: 'POST',
+                  url: "http://localhost:2113/feature-value/metric-area",
+                  data:  '{"page": "TEST", "x":'+ x +', "y": '+ y +', "height": '+ height +', "width": '+ width +', "metrica": "TEST"}',
+                  success: (function (response) { index = response.id; console.log(index); otris()})
+                });
+
+                let elem = $(`<div class="block" index="0" sel_index=${selection_index}><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
+                $('div.main').append(elem);
+                let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
+                elem.css(position);     
+                selections[selection_index] = position;
+                canDrawSelection = false;    
+                ++selection_index;        
+
+                function otris(){
+                  elem.attr('index',index);
+                  elem.children('i').removeAttr('style');
+                }   
             }
-            if(height < 0){
-                height = Math.abs(height);
-                y = y - height;
-            }
-
-        if(width > 3 && height > 3){
-            let elem = $(`<div class="block" sel_index=${selection_index}><i class="material-icons del_img">highlight_off</i></div>`);
-            $('div.main').append(elem);
-            let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
-            elem.css(position);     
-
-            selections[selection_index] = position;
-            canDrawSelection = false;    
-            ++selection_index;                   
-        }
-        // else{console.log('Слишком маленькая область')}
     });
+
+
+
+
+ 
 
     $('body').on('click', '.del_img', function() {
         let parent = event.target.closest('div');
-        delete selections[$(parent).attr('sel_index')]
-        parent.remove()
+        // console.log(typeof($(parent).attr('index')))
+        // var url_d = 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index');
+        $.ajax({ 
+          url: 'http://localhost:2113/feature-value/metric-area/53', 
+          type: 'DELETE', 
+          // data: {_method: 'delete'}
+        });
+        // .success(function(result) {
+        //         console.log('Блок: '+ $(parent).attr("index") +' удалён.');
+        // });
     });
+
+
+/*
+$.delete = function(url, data, callback, type){
+ 
+  if ( $.isFunction(data) ){
+    type = type || callback,
+        callback = data,
+        data = {}
+  }
+ 
+  return $.ajax({
+    url: url,
+    type: 'DELETE',
+    success: callback,
+    data: data,
+    contentType: type
+  });
+}
+*/
+
 
  </script>
 
@@ -222,30 +254,11 @@
     });
 </script>
 
-<!-- Боковое меню -->
-<!-- <script>
-function del_off(){
-    $('.navmenu').removeClass('offcanvas')
-}
-
-$('.open_nav').click(function() { 
-        if($('.navmenu').hasClass('offcanvas')){
-            setTimeout (del_off,180);
-            $('.navmenu').animate({left: '0px' }, 200); 
-            $('body').animate({left: '285px'}, 200);
-    }else{
-            $('.navmenu').animate({left: '-285px'}, 200); 
-            $('body').animate({left: '0px' 
-                }, 200);    
-    }
-</script> -->
-
-
-
 
 <!-- Запросы с сервера -->
 <script type="text/javascript">
 
+// выбор метрик
 function fill_metric_modal_dropdown(metrica) {
     $('#select_metric').append($(`<option>${metrica.next_event}</option>`));
 }
