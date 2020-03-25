@@ -33,6 +33,7 @@
           </button>
          
         <div class="main"></div>
+        <div id="zatmen" ></div>
 
 
 
@@ -177,12 +178,20 @@
             height = height/maxH*100;
             if(width < 0){ width = Math.abs(width); x = x - width;}
             if(height < 0){height = Math.abs(height); y = y - height; }
-            if(width > 3 && height > 3){
+            if(width > 3 && height > 3 && razresh){
 
                 $.ajax({
                   type: 'POST',
                   url: "http://localhost:2113/feature-value/metric-area",
-                  data:  '{"page": "TEST", "x":'+ x +', "y": '+ y +', "height": '+ height +', "width": '+ width +', "metrica": "TEST"}',
+                  dataType: 'json',
+                  data:  JSON.stringify({
+                    "page": "TEST", 
+                    "x": x, 
+                    "y": y,
+                    "height": height, 
+                    "width": width, 
+                    "metrica": "TEST"
+                  }),
                   success: (function (response) { index = response.id; console.log(index); otris()})
                 });
 
@@ -201,47 +210,38 @@
             }
     });
 
-
-
-
- 
-
     $('body').on('click', '.del_img', function() {
         let parent = event.target.closest('div');
-        // console.log(typeof($(parent).attr('index')))
-        // var url_d = 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index');
-        $.ajax({ 
-          url: 'http://localhost:2113/feature-value/metric-area/53', 
-          type: 'DELETE', 
-          // data: {_method: 'delete'}
+        console.log(($(parent).attr('index')))
+        var url_d = 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index');
+        
+        $.ajax({
+            url: url_d,
+            type: 'DELETE',
+            success: function(result) {
+              console.log('Блок: удалён.');
+            }
         });
-        // .success(function(result) {
-        //         console.log('Блок: '+ $(parent).attr("index") +' удалён.');
-        // });
+        delete selections[$(parent).attr('sel_index')]
+        parent.remove()
     });
-
-
-/*
-$.delete = function(url, data, callback, type){
- 
-  if ( $.isFunction(data) ){
-    type = type || callback,
-        callback = data,
-        data = {}
-  }
- 
-  return $.ajax({
-    url: url,
-    type: 'DELETE',
-    success: callback,
-    data: data,
-    contentType: type
-  });
-}
-*/
-
-
  </script>
+
+<!-- Боковое меню -->
+<script>
+  var razresh = true;
+  $('.open_nav').on('click', function(){
+    if($('#myNavmenu').hasClass('canvas-slid')){
+      $('#zatmen').removeClass('zatmen');
+      $('.open_nav').removeClass('rotate');
+      razresh = true;
+    }else{
+      $('#zatmen').addClass('zatmen')
+      $('.open_nav').addClass('rotate');
+      razresh = false;
+    }  }  );
+
+</script>
 
 <!-- Открытие модальных окон -->
 <script type="text/javascript">
@@ -254,11 +254,8 @@ $.delete = function(url, data, callback, type){
     });
 </script>
 
-
-<!-- Запросы с сервера -->
+<!-- Метрики -->
 <script type="text/javascript">
-
-// выбор метрик
 function fill_metric_modal_dropdown(metrica) {
     $('#select_metric').append($(`<option>${metrica.next_event}</option>`));
 }
@@ -282,6 +279,39 @@ function get_metric(){
 $(function() {
     get_metric();
 });
+
+
+
+// Отрисовка зон с бэка
+function get_area(){
+  let req = $.ajax({
+    type: "GET",
+    url: 'http://localhost:2113/feature-value/metric-area/list',
+  }).done(function(data) {
+    let i=0;
+    while( i < data.length){
+      console.log('yo')
+  
+      let elem_serv = $(`<div class="block" index="${data[i].id}" sel_index=${selection_index}><i class="material-icons del_img">highlight_off</i></div>`);
+      $('div.main').append(elem_serv);
+      let position = {'width': `${data[i].width}%`, 'height': `${data[i].height}%`, 'top': `${data[i].y}%`, 'left': `${data[i].x}%`};
+      elem_serv.css(position);     
+      // selections[selection_index] = position;
+      canDrawSelection = false;    
+      ++selection_index;        
+      i++;
+    }
+
+    console.log();
+  });
+};  
+
+$(function() {
+    get_area();
+});
+
+
+
 
 </script>
 
