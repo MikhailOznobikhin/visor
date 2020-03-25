@@ -62,3 +62,18 @@ canvas {
     margin-top: 5%;
     /* margin-left: 15px; */
 }
+.zatmen{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    opacity: 0.5;
+    z-index: 10;
+}
+.rotate{
+    transition: 0.5s;
+    transform: rotate(180deg);
+}
