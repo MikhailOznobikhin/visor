@@ -61,8 +61,6 @@ function animate() {
 animate();
 
 
-
-
 // Создание блоков
 let x, y;
 let width, height;
@@ -127,10 +125,6 @@ $(document).mouseup(
             } 
         }
 });
-
-
-
-
 
 
 // Удаление блоков
@@ -215,5 +209,129 @@ $.ajax({
     });
 });
 
+
+$('.custom-file-input').on('change',function(){
+    let filePath = $(this).val();
+    let separator = filePath.search('/') != -1 ? '/' : '\\';
+    $('.custom-file-label').html(filePath.split(separator).pop());
+});
+
+
+// $('#add_screen').on('click',function(){
+//     var name_page = $('.name_page').val();
+//     var link_page = $('.custom-file-label').html();
+//     var form = $('#customFile')[0];
+    
+//     console.log(form)
+    
+    
+//     var data = new FormData(form)
+//     data.append("CustomField", "This is some extra data, testing");
+
+
+//     console.log('Название файла: '+name_page);
+//     console.log('Ссылка на файл: '+link_page);
+
+//     $.ajax({
+//         type: "POST",
+//         enctype: 'multipart/form-data',
+//         url: "http://localhost:2113/feature-value/page/",
+//         data: data,
+//         processData: false,
+//         contentType: false,
+//         cache: false,
+//         timeout: 600000,
+//         success: function (data) {
+
+//             $("#result").text(data);
+//             console.log("SUCCESS : ", data);
+//             $("#btnSubmit").prop("disabled", false);
+
+//         },
+//         error: function (e) {
+
+//             $("#result").text(e.responseText);
+//             console.log("ERROR : ", e);
+//             $("#btnSubmit").prop("disabled", false);
+
+//         }
+//     });
+
+
+
+    // $.ajax({
+    //     type: 'POST',
+    //     url: "http://localhost:2113/feature-value/page",
+    //     dataType: 'application/json',
+    //     contentType: 'multipart/form-data',
+
+    //     success: (function (response) { console.log('Файл: '+name_page+ ' загружен');;})
+    // });
+
+
+
+// })
   
+
+$(document).ready(function () {
+
+    $("#btnSubmit").click(function (event) {
+
+        //stop submit the form, we will post it manually.
+        event.preventDefault();
+
+        // Get form
+        var form = $('#fileUploadForm')[0];
+
+		// Create an FormData object 
+        var data = new FormData(form);
+
+		// If you want to add an extra field for the FormData
+        data.append("CustomField", "This is some extra data, testing");
+
+		// disabled the submit button
+        $("#btnSubmit").prop("disabled", true);
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "http://localhost:2113/feature-value/page",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+
+                $("#result").text(data);
+                console.log("SUCCESS : ", data);
+                $("#btnSubmit").prop("disabled", false);
+
+            },
+            error: function (e) {
+
+                $("#result").text(e.responseText);
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+
+            }
+        });
+
+    });
+
+});
+
+
+/*
+curl -i -X PUT -H "Content-Type: multipart/form-data" 
+-F "screen=@/home/user/test/bill.svg;type=image/svg" 
+-F 'data={"name": "testee2"};
+type=application/json' 
+http://localhost:2113/feature-value/page/2
+
+[{"id": 1, "name": "testee", "product": "test_product"}]
+
+
+curl -i -X POST -H "Content-Type: multipart/form-data" -F "screen=@/home/user/test/img.jpg;type=image/jpeg" -F 'data={"product":"test_product", "name": "testee"};type=application/json' http://localhost:2113/feature-value/page
+*/
 
