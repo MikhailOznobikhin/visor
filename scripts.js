@@ -239,7 +239,7 @@ function setimage(){
         method: 'POST',
         type: 'POST',
         success: function(data){
-            alert('yooooo');
+            console.log('данные отправлены');
         }
     });
 }
