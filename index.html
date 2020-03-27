@@ -69,32 +69,34 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+
         <div class="modal-body">
-            <input class="name_page" placeholder="enter name">
-            <!-- <div class="custom-file add_screen_label">
-                <input type="file" class="custom-file-input" id="customFile">
-                <label class="custom-file-label" for="customFile">Выберите файл</label>
+
+
+
+            <form id="form-order" class="quest" method="POST" action="" enctype="multipart/form-data">
+           
+              <p><input type="text" id="name">
+              <p><input type="text" id="product">
+              <p><input type="file" id="file">
+              <input name="submit" type="submit" onclick="setimage();return false;" value="ОТПРАВИТЬ">
+            </form>
+
+
+
+
+            <!-- formData.append('image', $('input[type=file]')[0].files[0]); -->
+                <!-- <input type="text" class="form-control name_page" placeholder="enter name">
+                <div class="custom-file add_screen_label">
+                    <input type="file" class="custom-file-input" id="customFile">
+                    <label class="custom-file-label" for="customFile">Выберите файл</label>
+                </div>            
+            </div>
+        
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" id="add_screen" class="btn btn-primary">Add screen</button>  
             </div> -->
-
-              
-                <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
-                    <input type="text" name="extraField"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-                    <input type="submit" value="Submit" id="btnSubmit"/>
-                </form>
-
-
-
-              
-                <!-- id="file-demo" type="file" class="file"  data-preview-file-type="any" -->
-            
-        </div>
-    
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" id="add_screen" class="btn btn-primary">Add screen</button>
-        </div>
       </div>
     </div>
   </div>
