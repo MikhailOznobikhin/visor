@@ -1,0 +1,62 @@
+user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/metric-area/list
+user@user-Lenovo-G580:~/ispvisor$ curl -X POST -d '{"page": 1, "x": 20, "y": 30, "height": 40, "width": 60, "metrica": "metric1"}' localhost:2113/feature-value/metric-area
+user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/metric-area/list
+{"id": 1, "page": "1", "x": 20.0, "y": 30.0, "width": 60.0, "height": 40.0, "metrica": "metric1"}user@user-Lenovo-G580:~/ispvisor$ curl localhuser@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl -X POST -d '{"page": 1, "x": 20, "y": 30, "height": 40, "width": 60, "metrica": "metric2"}' localhost:2113/feature-value/metric-area
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/metric-area/list
+[{"id": 1, "page": "1", "x": 20.0, "y": 30.0, "width": 60.0, "height": 40.0, "metrica": "metric1"}, {"id": 2, "page": "1", "x": 20.0, "y": 30.0, "width": 60.0, "height": 40.0, "metrica": "metric2"}]user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl -X DELETE localhost:2113/feature-value/metric-area/1
+{}user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/metric-area/list
+{"id": 2, "page": "1", "x": 20.0, "y": 30.0, "width": 60.0, "height": 40.0, "metrica": "metric2"}user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/metric-area
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl -X PUT -d '{"page": 1, "x": 20, "y": 30, "height": 40, "width": 60, "metrica": "metric23"}' localhost:2113/feature-value/metric-area/2
+user@user-Lenovo-G580:~/ispvisor$ $ curlocalhost:2113/feature-value/metric-area/list
+{"id": 2, "page": "1", "x": 20.0, "y": 30.0, "width": 60.0, "height": 40.0, "metrica": "metric23"}user@user-Lenovo-G580:~/ispvisor$ ^C
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ 
+user@user-Lenovo-G580:~/ispvisor$ curl localhost:2113/feature-value/transitions/test
+[{"event": "/page1", "next_event": "/page2", "users_nunique": 10, "users_count": 20, "session_nunique": 15, "times_median": 2494.0, "regularity": 2, "ses_regularity": 1.5, "unique_in_ses": 1.5}, {"event": "/page1", "next_event": "/page3", "users_nunique": 20, "users_count": 40, "session_nunique": 30, "times_median": 2494.0, "regularity": 2, "ses_regularity": 1.5, "unique_in_ses": 1.5}, {"event": "/page1", "next_event": "/page4", "users_nunique": 30, "users_count": 60, "session_nunique": 45, "times_median": 2494.0, "regularity": 2, "ses_regularity": 1.5, "unique_in_ses": 1.5}]user@user-Lenovo-G580:~/ispvisor$ ^C
+user@user-Lenovo-G580:~/ispvisor$ 
+
+user@user-Lenovo-G580:~/ispvisor$ curl -i -X POST -H "Content-Type: multipart/form-data" -F "screen=@/home/user/test/img.jpg;type=image/jpeg" -F 'data={"product":"test_product", "name": "testee"};type=application/json' http://localhost:2113/feature-value/page
+HTTP/1.1 100 Continue
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 9
+Date: Thu, 26 Mar 2020 05:00:15 GMT
+Server: Python/3.8 aiohttp/3.6.2
+
+{"id": 1}user@user-Lenovo-G580:~/ispvisor$ curl -i -X POST -H "Content-Type: multipart/form-data" -F /home/user/test/img.jpg;type=image/jpg" -F 'data={"product":"test_product", "name": "testee"};type=application/json' http://localhost:2113/feature-value/page
+HTTP/1.1 100 Continue
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 9
+Date: Thu, 26 Mar 2020 05:01:23 GMT
+Server: Python/3.8 aiohttp/3.6.2
+
+{"id": 2}user@user-Lenovo-G580:~/ispvisor$ curl http://localhost:2113/feature-value/page/list
+[{"id": 1, "name": "testee", "product": "test_product"}, {"id": 2, "name": "testee", "product": "test_product"}]user@user-Lenovo-G580:~/ispvisor$ 
+
