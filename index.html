@@ -9,8 +9,8 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/css/jasny-bootstrap.min.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/js/jasny-bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/css/jasny-bootstrap.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/js/jasny-bootstrap.min.js"></script>
         <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
         <link href="styles.css"  rel="stylesheet">
     </head>
@@ -69,34 +69,13 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-
+          
         <div class="modal-body">
-
-
-
-            <form id="form-order" class="quest" method="POST" action="" enctype="multipart/form-data">
-           
-              <p><input type="text" id="name">
-              <p><input type="text" id="product">
-              <p><input type="file" id="file">
+            <form>
+              <p><input type="text" id="page_name">
+              <p><input type="file" id="page_background">
               <input name="submit" type="submit" onclick="setimage();return false;" value="ОТПРАВИТЬ">
             </form>
-
-
-
-
-            <!-- formData.append('image', $('input[type=file]')[0].files[0]); -->
-                <!-- <input type="text" class="form-control name_page" placeholder="enter name">
-                <div class="custom-file add_screen_label">
-                    <input type="file" class="custom-file-input" id="customFile">
-                    <label class="custom-file-label" for="customFile">Выберите файл</label>
-                </div>            
-            </div>
-        
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" id="add_screen" class="btn btn-primary">Add screen</button>  
-            </div> -->
       </div>
     </div>
   </div>

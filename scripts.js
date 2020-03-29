@@ -220,22 +220,18 @@ $('.custom-file-input').on('change',function(){
 
 function setimage(){
     event.preventDefault();
-    var name = $('#name').val();
-    var product = $('#product').val();
-    var form = $('#form-order')[0];
     
     var data = new FormData();
-    data.append('file', $('input[type=file]')[0].files[0]);
-    data.append('product', "TEST_product");
-    data.append('name', "TEST_name");
+    data.append('page_background', $('input[type=file]')[0].files[0]);
+    data.append('page_info', JSON.stringify({"name": $('#page_name').val(), "product": "test_product"}));
   
     jQuery.ajax({
         url: 'http://localhost:2113/feature-value/page',
         data: data,
         cache: false,
         processData: false,
-        contentType: 'multipart/form-data;',
-        dataType: 'json',
+        contentType: false,
+        enctype: 'multipart/form-data',
         method: 'POST',
         type: 'POST',
         success: function(data){
