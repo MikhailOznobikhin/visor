@@ -17,16 +17,16 @@ let canvas = document.createElement("canvas")
 canvas.width = document.body.clientWidth; 
 canvas.height = document.body.clientHeight;
 let ctx = canvas.getContext("2d")
-document.body.appendChild(canvas);
+document.getElementsByClassName('main')[0].appendChild(canvas);
 let x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 let canDrawSelection = false;
 
 canvas.addEventListener("mousedown", function(e) {
     canDrawSelection = true;
-    x1 = e.clientX;
-    y1 = e.clientY;
-    x2 = e.clientX;
-    y2 = e.clientY;
+    x1 = e.pageX+8;
+    y1 = e.pageY-56;
+    x2 = e.pageX;
+    y2 = e.pageY;
 });
 
 canvas.addEventListener("mouseup", function(e) {
@@ -34,8 +34,8 @@ canvas.addEventListener("mouseup", function(e) {
 });
 
 canvas.addEventListener("mousemove", function(e) {
-    x2 = e.clientX;
-    y2 = e.clientY;
+    x2 = e.pageX+8;
+    y2 = e.pageY-56;
 });
 
 function drawSelection() {
@@ -143,13 +143,19 @@ $('body').on('click', '.del_img', function() {
 // Боковое меню
 var resolution = true;
 $('.open_nav').on('click', function(){
-    if($('#myNavmenu').hasClass('canvas-slid')){
+    if($('#myNavmenu').hasClass('open_menu')){
+        $('#myNavmenu').removeClass('open_menu');
+        $('#myNavmenu').addClass('close_menu');
         $('#blackout').removeClass('blackout');
         $('.open_nav').removeClass('rotate');
+        $('body').removeClass('left')
         resolution = true;
     } else {
-        $('#blackout').addClass('blackout')
+        $('body').addClass('left');
+        $('#blackout').addClass('blackout');
         $('.open_nav').addClass('rotate');
+        $('#myNavmenu').addClass('open_menu');
+        $('#myNavmenu').removeClass('close_menu');
         resolution = false;
     }   
 });
@@ -217,25 +223,73 @@ $('.custom-file-input').on('change',function(){
 });
 
 
+// Получение скринов с сервера
+$(function get_screen(){
+    $.ajax({
+        type: "GET",
+        url: 'http://localhost:2113/feature-value/page/list',
+    }).done(function(data) {
+        data.forEach(function(item){
+            let screen= $(`<li class="nav-item" id_li="${item.id}">
+            <button id_img="${item.id}" name_img="${item.name}" product_img="${item.product}" ext_img="${item.file_ext}" class="btn btn-info open_screen">${item.name}</button>
+            <button type="button" class="btn btn-danger delete_screen" id_del="${item.id}">
+            <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
+            </button></li>`);
+            $('#list_screen').append(screen);
+        });
+    });
+})
 
-function setimage(){
+
+// Загрузка скринов на сервер
+function setimage(){  
     event.preventDefault();
-    
     var data = new FormData();
     data.append('page_background', $('input[type=file]')[0].files[0]);
     data.append('page_info', JSON.stringify({"name": $('#page_name').val(), "product": "test_product"}));
-  
-    jQuery.ajax({
-        url: 'http://localhost:2113/feature-value/page',
-        data: data,
-        cache: false,
-        processData: false,
-        contentType: false,
-        enctype: 'multipart/form-data',
-        method: 'POST',
-        type: 'POST',
-        success: function(data){
-            console.log('данные отправлены');
+    function send_img(){
+        $.ajax({
+            url: 'http://localhost:2113/feature-value/page',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            method: 'POST',
+            type: 'POST',
+            success: function(data){
+                localStorage.setItem('key', data.id);
+                localStorage.setItem('key', data.file_ext);
+                console.log(data)
+                console.log('данные отправлены');
+                // $('canvas').css('background', 'url(../images/test_product/'+data.id+'.'+data.file_ext);
+            }
+        })
+    }
+    setTimeout(send_img,4000)
+}
+
+$('#send_screen').on('click',function(e){e.preventDefault(); setimage()})
+
+
+
+
+// Действие при клике на скрин 
+$('body').on('click', '.open_screen', function() {
+    $('canvas').css('background', 'url(../images/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
+}); 
+
+
+// Удаление скрина
+$('body').on('click', '.delete_screen', function() {
+    event.preventDefault();
+    let id_d = event.target.getAttribute('id_del');
+    $.ajax({
+        url: 'http://localhost:2113/feature-value/page/'+id_d,
+        type: 'DELETE',
+        success: function(result) {
+            console.log('Скрин: '+ id_d +' удалён.'); 
         }
     });
-}
+    $('[id_li ='+ id_d +']').remove()
+}); 
