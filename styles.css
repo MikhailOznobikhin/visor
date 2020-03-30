@@ -95,10 +95,10 @@ canvas {
     margin-top: 56px;
 }
 .open_menu{
-    width: 300px;
+    left: 0px;
 }
 .close_menu{
-    width: 0px;
+    left: -300px;
 }
 .left{
     left: 300px;
@@ -107,9 +107,14 @@ canvas {
 .open_screen{
     text-align: center;
     justify-content: center;
-    margin: 10px; 
-    display: inline-block;  
+    margin-top: -6%;
+    margin-left: 5%;
+    display: inline-block;
+    width: 70%;
 }
 .delete_screen{
-    background-color: red;
+    float: right;
+    margin-top: -5%;
+    margin-right: 5%;
 }
+/*   - G:\XAMP\htdocs:/images */
