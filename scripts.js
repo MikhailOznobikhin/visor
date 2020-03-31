@@ -267,7 +267,6 @@ function setimage(e){
         method: 'POST',
         type: 'POST',
         success: function(data){
-            console.log(data.file_ext)
             localStorage.setItem('key', data.id);
             $('canvas').css('background', 'url(http://localhost/test_product/'+data.id+'.'+data.file_ext);
 
@@ -278,6 +277,12 @@ function setimage(e){
             <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
             </button></li>`);
             $('#list_screen').append(screen);
+
+            $(function () {
+                $('#modal_add_screen').modal('toggle');
+                $('#modal_add_screen input:eq(0)').val('');
+                $('#modal_add_screen input:eq(1)').val('');
+             });
         }
     })
 }    
