@@ -15,21 +15,26 @@
         <link href="styles.css"  rel="stylesheet">
     </head>
     <body>
-
-    <nav class="navbar navbar-dark bg-primary navhead" style="left: 0;">
-      <a class="navbar-brand" href="#">ISPvisor</a>
-      <a class="navbar-brand" href="#">VMmanager</a>
-      <a class="navbar-brand" href="#">DCImanager</a>
-      <a class="navbar-brand" href="#">Vepp</a>
-      <a class="navbar-brand" href="#">Cartbee</a>
-      <a class="navbar-brand" href="#">Cartbee-shop</a>
+    <nav class="navbar navbar-dark static-top navhead" style="left: 0;">
+      <a class="navbar-brand logo" href="#"><b>ISPvisor</b></a>
+      <div class="container">
+          <a class="navbar-brand sub" href="#"><b>VMmanager</b></a>
+          <a class="navbar-brand sub" href="#"><b>DCImanager</b></a>
+          <a class="navbar-brand sub" href="#"><b>Vepp</b></a>
+          <a class="navbar-brand sub" href="#"><b>Cartbee</b></a>
+          <a class="navbar-brand sub" href="#"><b>Cartbee-shop</b></a>
+        </div>
     </nav>  
     
     <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left close_menu">
       <p class="navmenu-brand">Выбор изображения</p>
       <ul id="list_screen" class="nav navmenu-nav flex-column"></ul>
-      <button class="btn btn-primary add_screen">Добавить</button>
-    </nav>
+
+      <div class="buttons">
+        <button class="btn btn-primary add_screen">Добавить</button>
+        <button class="btn btn-warning edit_screen">Редактировать</button>
+      </div>
+      </nav>
           
     <button class="btn btn-primary navbar-toggler open_nav" style="z-index: 999;" type="button">
       <i class="material-icons">forward</i>
@@ -39,23 +44,23 @@
       <div id="blackout"></div>
     </div>
     
-    <div class="modal fade" id="modal_select_metrica">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Выбор метрики</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          </div>
-          <div class="modal-body">
-              <select id="select_metric" class="selectpicker" data-style="btn-primary" data-live-search="true"></select>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <button type="button" class="btn btn-primary" id="put_metrica">Сохранить изменения</button>
-          </div>
+  <div class="modal fade" id="modal_select_metrica">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Выбор метрики</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <select id="select_metric" class="selectpicker" data-style="btn-primary" data-live-search="true"></select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" id="put_metrica">Сохранить изменения</button>
         </div>
       </div>
     </div>
+  </div>
 
   <div class="modal fade" id="modal_add_screen">
     <div class="modal-dialog" role="document">
@@ -65,17 +70,35 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="modal-body">
-            <form id="regForm">
-              <p><input class="form-control" type="text" id="page_name" placeholder="Enter page name"></p>
-              <p><input class="form-control-file" type="file" id="page_background"></p>
-              <input class="btn btn-primary" type="submit" value="Отправить" id="send_screen">
-            </form>
+          <form id="regForm">
+            <p><input class="form-control" type="text" id="page_name" placeholder="Enter page name"></p>
+            <p><input class="form-control-file" type="file" id="page_background"></p>
+            <input class="btn btn-primary" type="submit" value="Отправить" id="send_screen">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal_edit_screen">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Редактирование изображения</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <p><input class="form-control" type="text" id="page_name_edit" placeholder="Enter page name"></p>
+            <p><input class="form-control-file" type="file" id="page_background_edit"></p>
+            <input class="btn btn-primary" type="submit" value="Сохранить изменения" id="edit_screen">
+          </form>
+        </div>
       </div>
     </div>
   </div>
   
-
-
+  
 <script src="scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

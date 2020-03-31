@@ -19,6 +19,12 @@ canvas {
     transition: 0.5s;
     top: 56px;
 }
+.logo{
+    font-size: x-large;
+}
+.sub{
+    font-size: x-large;
+}
 
 
 .block{
@@ -58,11 +64,7 @@ canvas {
     margin-right: -50%;
     border-radius: 5px;
 }
-.add_screen{
-    position: absolute;
-    top: 90%;
-    left: 36%;
-}
+
 .modal{
     top: 25%;
 }
@@ -117,4 +119,16 @@ canvas {
     margin-top: -5%;
     margin-right: 5%;
 }
-/*   - G:\XAMP\htdocs:/images */
+.edit_screen{
+    margin-left: 2%;
+    width: 48%;
+}
+.add_screen{
+    width: 47.5%;
+}
+.buttons{
+    position: absolute;
+    top: 90%;
+    left: 5%;
+    width: 90%;
+}
