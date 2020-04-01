@@ -2,7 +2,7 @@ let deviationX = 8;
 let deviationY = 56;
 let local_name;
 
-// Функция добваления
+// Функция добваления в список скринов
 function append_list_screen(data, local_name){
     $('#list_screen').append(
         $(`<li class="nav-item" id_li="${data.id}">
@@ -268,11 +268,6 @@ $(function ($) {
     });
 })
 
-$(function ($) {
-    $("#editForm").submit(function (e) {
-        edit_screen();
-    });
-})
 
 
 //Создание и загрузка скринов на сервер
@@ -298,45 +293,45 @@ function made_screen(){
             append_list_screen(data, local_name);
             $(function () {
                 $('#modal_add_screen').modal('toggle');
-                $('#modal_add_screen input:eq(0)').val('');
-                $('#modal_add_screen input:eq(1)').val('');
-             });
+               $('#modal_add_screen input:eq(0)').val('');
+                $('#modal_add_screen input:eq(1)').val(''); 
+            });
         }
     })
 }    
 
 
-
-// Изменение метрики блока
-// $('#put_metrica').on('click',function(){
-//     let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
-//     let metrica = $('#modal_select_metrica #select_metric').val()
-
-//     $.ajax({
-//       url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
-//       type: 'PUT',
-//       data:  JSON.stringify({ "metrica": metrica}),
-//       success: function(result) {console.log("Метрика блока "+ parentId +" изменена на "+ metrica);
-//       }
-//     });
-//   });
-
-
 // Изменение скринов
+$(function ($) {
+    $("#editForm").submit(function (e) {
+        edit_screen();
+    });
+})
+
 function edit_screen(){
     event.preventDefault();
-    // var data = new FormData();
-    // data.append('page_background', $('input[type=file]')[0].files[0]);
-    // data.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
-    // console.log(data);
-    console.log('http://localhost:2113/feature-value/page/'+ localStorage.getItem('id_this_page'));
-    console.log($('#page_name_edit').val());
+
+    var data_edit = new FormData();
+    data_edit.append('page_background_edit', $('input[type=file]')[0].files[0]);
+    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+ localStorage.getItem('id_this_page'),
+        data: data_edit,
+        cache: false,
+        processData: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        method: 'PUT',
         type: 'PUT',
-        data: JSON.stringify({"name": $('#page_name_edit').val()}),
-        success: function(data){alert('EDIT') }
-    });
+        success: function(){
+            localStorage.setItem('name_this_page', $('#page_name_edit').val());
+            $('[id_img='+localStorage.getItem('id_this_page')+']').html($('#page_name_edit').val())
+            $('[id_img='+localStorage.getItem('id_this_page')+']').attr('name_img', $('#page_name_edit').val())
+            $('#modal_edit_screen').modal('toggle');
+            $('#modal_edit_screen input:eq(0)').val('');
+            $('#modal_edit_screen input:eq(1)').val(''); 
+        }
+    })
 } 
 
 
@@ -370,8 +365,8 @@ function delete_screen(){
 }
 
 
+// Сохранение страницы при перезагрузке
 $(function(){
-    console.log(localStorage.getItem('id_this_page'));
     if(localStorage.getItem('id_this_page') != null){
         $('canvas').css('background', 'url(http://localhost/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page')); 
     }
