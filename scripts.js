@@ -305,41 +305,38 @@ function made_screen(){
     })
 }    
 
-/*
-// Изменение метрики блока
-$('#put_metrica').on('click',function(){
-    let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
-    let metrica = $('#modal_select_metrica #select_metric').val()
 
-    $.ajax({
-      url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
-      type: 'PUT',
-      data:  JSON.stringify({ "metrica": metrica}),
-      success: function(result) {console.log("Метрика блока "+ parentId +" изменена на "+ metrica);
-      }
-    });
-  });
-*/
+
+// Изменение метрики блока
+// $('#put_metrica').on('click',function(){
+//     let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
+//     let metrica = $('#modal_select_metrica #select_metric').val()
+
+//     $.ajax({
+//       url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
+//       type: 'PUT',
+//       data:  JSON.stringify({ "metrica": metrica}),
+//       success: function(result) {console.log("Метрика блока "+ parentId +" изменена на "+ metrica);
+//       }
+//     });
+//   });
 
 
 // Изменение скринов
 function edit_screen(){
     event.preventDefault();
-    var data = new FormData();
-    data.append('page_background', $('input[type=file]')[0].files[0]);
-    data.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
+    // var data = new FormData();
+    // data.append('page_background', $('input[type=file]')[0].files[0]);
+    // data.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
+    // console.log(data);
+    console.log('http://localhost:2113/feature-value/page/'+ localStorage.getItem('id_this_page'));
+    console.log($('#page_name_edit').val());
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+ localStorage.getItem('id_this_page'),
-        data: data,
-        cache: false,
-        processData: false,
-        contentType: false,
-        enctype: 'multipart/form-data',
-        method: 'PUT',
         type: 'PUT',
-        success: function(data){alert('yo')
-        }
-    })
+        data: JSON.stringify({"name": $('#page_name_edit').val()}),
+        success: function(data){alert('EDIT') }
+    });
 } 
 
 
@@ -347,6 +344,7 @@ function edit_screen(){
 $('body').on('click', '.open_screen', function() {
     localStorage.setItem('id_this_page', event.target.getAttribute("id_img"));
     localStorage.setItem('name_this_page', event.target.getAttribute("name_img"));
+    localStorage.setItem('ext_this_page', event.target.getAttribute("ext_img"));
     $('canvas').css('background', 'url(http://localhost/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
 }); 
 
@@ -371,6 +369,13 @@ function delete_screen(){
     return false;
 }
 
+
+$(function(){
+    console.log(localStorage.getItem('id_this_page'));
+    if(localStorage.getItem('id_this_page') != null){
+        $('canvas').css('background', 'url(http://localhost/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page')); 
+    }
+})
 
 
 
