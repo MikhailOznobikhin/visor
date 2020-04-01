@@ -2,31 +2,19 @@ let deviationX = 8;
 let deviationY = 56;
 let local_name;
 
-// Функция добваления в список скринов
-function append_list_screen(data, local_name){
-    $('#list_screen').append(
-        $(`<li class="nav-item" id_li="${data.id}">
-        <button id_img="${data.id}" name_img="`+local_name+`" product_img="${data.product}" ext_img="`+data.file_ext+`" class="btn btn-info open_screen">`+local_name+`</button>
-        <button type="button" class="btn btn-danger delete_screen" id_del="${data.id}">
-        <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
-        </button></li>`)
-    );
-}
-
 
 // Изменение метрики блока
 $('#put_metrica').on('click',function(){
     let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
     let metrica = $('#modal_select_metrica #select_metric').val()
-
     $.ajax({
       url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
       type: 'PUT',
       data:  JSON.stringify({ "metrica": metrica}),
-      success: function(result) {console.log("Метрика блока "+ parentId +" изменена на "+ metrica);
-      }
+      success: close_modal('#modal_select_metrica')
     });
-  });
+});
+
 
 // Онлайн показ размера блока
 let canvas = document.createElement("canvas")
@@ -122,7 +110,8 @@ $(document).mouseup(
                     "height": height, 
                     "width": width, 
                     "metrica": "TEST"
-                }),success: (function (response) { index = response.id; console.log("Блок: "+index+" создан"); adding_index()})
+                }),
+                success: (function(response){index = response.id; adding_index()})
                 });
             }  
             send_area();
@@ -133,14 +122,14 @@ $(document).mouseup(
             elem.css(position);                 
             canDrawSelection = false;  
             
-
             function adding_index(){
                 elem.attr('index',index);
                 elem.children('i').removeAttr('style');
                 selections[index] = position;
             } 
         }
-});
+    }
+);
 
 
 // Удаление блоков
@@ -148,8 +137,7 @@ $('body').on('click', '.del_img', function() {
     let parent = event.target.closest('div'); 
     $.ajax({
         url: 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index'),
-        type: 'DELETE',
-        success: function(result) {console.log('Блок: '+$(parent).attr('index')+' удалён.'); }
+        type: 'DELETE'
     });
     delete selections[$(parent).attr('sel_index')]
     parent.remove()
@@ -269,7 +257,6 @@ $(function ($) {
 })
 
 
-
 //Создание и загрузка скринов на сервер
 function made_screen(){
     event.preventDefault();
@@ -291,11 +278,7 @@ function made_screen(){
             localStorage.setItem('name_this_page', local_name);
             $('canvas').css('background', 'url(http://localhost/test_product/'+data.id+'.'+data.file_ext);
             append_list_screen(data, local_name);
-            $(function () {
-                $('#modal_add_screen').modal('toggle');
-               $('#modal_add_screen input:eq(0)').val('');
-                $('#modal_add_screen input:eq(1)').val(''); 
-            });
+            close_modal('#modal_add_screen');
         }
     })
 }    
@@ -310,12 +293,12 @@ $(function ($) {
 
 function edit_screen(){
     event.preventDefault();
-
+    let id_this_page = localStorage.getItem('id_this_page');
     var data_edit = new FormData();
     data_edit.append('page_background_edit', $('input[type=file]')[0].files[0]);
     data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
     $.ajax({
-        url: 'http://localhost:2113/feature-value/page/'+ localStorage.getItem('id_this_page'),
+        url: 'http://localhost:2113/feature-value/page/'+ id_this_page,
         data: data_edit,
         cache: false,
         processData: false,
@@ -325,11 +308,9 @@ function edit_screen(){
         type: 'PUT',
         success: function(){
             localStorage.setItem('name_this_page', $('#page_name_edit').val());
-            $('[id_img='+localStorage.getItem('id_this_page')+']').html($('#page_name_edit').val())
-            $('[id_img='+localStorage.getItem('id_this_page')+']').attr('name_img', $('#page_name_edit').val())
-            $('#modal_edit_screen').modal('toggle');
-            $('#modal_edit_screen input:eq(0)').val('');
-            $('#modal_edit_screen input:eq(1)').val(''); 
+            $('[id_img='+id_this_page+']').html($('#page_name_edit').val())
+            $('[id_img='+id_this_page+']').attr('name_img', $('#page_name_edit').val())
+            close_modal('#modal_edit_screen');
         }
     })
 } 
@@ -355,13 +336,9 @@ function delete_screen(){
     let id_d = event.target.getAttribute('id_del');
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+id_d,
-        type: 'DELETE',
-        success: function(result) {
-            console.log('Скрин: '+ id_d +' удалён.'); 
-        }
+        type: 'DELETE'
     });
     $('[id_li ='+ id_d +']').remove();
-    return false;
 }
 
 
@@ -373,4 +350,20 @@ $(function(){
 })
 
 
+// Закрытие модальных окон при успехе
+function close_modal(this_modal) {
+    $(this_modal).modal('toggle');
+    $(this_modal+'input:eq(0)').val('');
+    $(this_modal+'input:eq(1)').val(''); 
+};
 
+// Функция добавления в список скринов
+function append_list_screen(data, local_name){
+    $('#list_screen').append(
+        $(`<li class="nav-item" id_li="${data.id}">
+        <button id_img="${data.id}" name_img="`+local_name+`" product_img="${data.product}" ext_img="`+data.file_ext+`" class="btn btn-info open_screen">`+local_name+`</button>
+        <button type="button" class="btn btn-danger delete_screen" id_del="${data.id}">
+        <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
+        </button></li>`)
+    );
+}
