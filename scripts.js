@@ -1,6 +1,5 @@
 let deviationX = 8;
 let deviationY = 56;
-let local_name;
 
 
 // Изменение метрики блока
@@ -111,7 +110,10 @@ $(document).mouseup(
                     "width": width, 
                     "metrica": "TEST"
                 }),
-                success: (function(response){index = response.id; adding_index()})
+                success: (function(response){
+                    index = response.id; 
+                    adding_index()
+                })
                 });
             }  
             send_area();
@@ -260,7 +262,7 @@ $(function ($) {
 //Создание и загрузка скринов на сервер
 function made_screen(){
     event.preventDefault();
-    local_name = $('#page_name').val()
+    var local_name = $('#page_name').val()
     var data = new FormData();
     data.append('page_background', $('input[type=file]')[0].files[0]);
     data.append('page_info', JSON.stringify({"name": local_name, "product": "test_product"}));
