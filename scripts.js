@@ -1,32 +1,35 @@
+let deviationX = 8;
+let deviationY = 56;
+
+
 // Изменение метрики блока
 $('#put_metrica').on('click',function(){
     let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
     let metrica = $('#modal_select_metrica #select_metric').val()
-
     $.ajax({
       url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
       type: 'PUT',
       data:  JSON.stringify({ "metrica": metrica}),
-      success: function(result) {console.log("Метрика блока "+ parentId +" изменена на "+ metrica);
-      }
+      success: close_modal('#modal_select_metrica')
     });
-  });
+});
+
 
 // Онлайн показ размера блока
 let canvas = document.createElement("canvas")
 canvas.width = document.body.clientWidth; 
 canvas.height = document.body.clientHeight;
 let ctx = canvas.getContext("2d")
-document.body.appendChild(canvas);
+document.getElementsByClassName('main')[0].appendChild(canvas);
 let x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 let canDrawSelection = false;
 
 canvas.addEventListener("mousedown", function(e) {
     canDrawSelection = true;
-    x1 = e.clientX;
-    y1 = e.clientY;
-    x2 = e.clientX;
-    y2 = e.clientY;
+    x1 = e.pageX+deviationX;
+    y1 = e.pageY-deviationY;
+    x2 = e.pageX;
+    y2 = e.pageY;
 });
 
 canvas.addEventListener("mouseup", function(e) {
@@ -34,8 +37,8 @@ canvas.addEventListener("mouseup", function(e) {
 });
 
 canvas.addEventListener("mousemove", function(e) {
-    x2 = e.clientX;
-    y2 = e.clientY;
+    x2 = e.pageX+deviationX;
+    y2 = e.pageY-deviationY;
 });
 
 function drawSelection() {
@@ -106,7 +109,11 @@ $(document).mouseup(
                     "height": height, 
                     "width": width, 
                     "metrica": "TEST"
-                }),success: (function (response) { index = response.id; console.log("Блок: "+index+" создан"); adding_index()})
+                }),
+                success: (function(response){
+                    index = response.id; 
+                    adding_index()
+                })
                 });
             }  
             send_area();
@@ -117,14 +124,14 @@ $(document).mouseup(
             elem.css(position);                 
             canDrawSelection = false;  
             
-
             function adding_index(){
                 elem.attr('index',index);
                 elem.children('i').removeAttr('style');
                 selections[index] = position;
             } 
         }
-});
+    }
+);
 
 
 // Удаление блоков
@@ -132,8 +139,7 @@ $('body').on('click', '.del_img', function() {
     let parent = event.target.closest('div'); 
     $.ajax({
         url: 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index'),
-        type: 'DELETE',
-        success: function(result) {console.log('Блок: '+$(parent).attr('index')+' удалён.'); }
+        type: 'DELETE'
     });
     delete selections[$(parent).attr('sel_index')]
     parent.remove()
@@ -143,13 +149,19 @@ $('body').on('click', '.del_img', function() {
 // Боковое меню
 var resolution = true;
 $('.open_nav').on('click', function(){
-    if($('#myNavmenu').hasClass('canvas-slid')){
+    if($('#myNavmenu').hasClass('open_menu')){
+        $('#myNavmenu').removeClass('open_menu');
+        $('#myNavmenu').addClass('close_menu');
         $('#blackout').removeClass('blackout');
         $('.open_nav').removeClass('rotate');
+        $('body').removeClass('left')
         resolution = true;
     } else {
-        $('#blackout').addClass('blackout')
+        $('body').addClass('left');
+        $('#blackout').addClass('blackout');
         $('.open_nav').addClass('rotate');
+        $('#myNavmenu').addClass('open_menu');
+        $('#myNavmenu').removeClass('close_menu');
         resolution = false;
     }   
 });
@@ -166,6 +178,17 @@ $('body').on('click', 'div.block', function(event) {
 $('body').on('click', 'button.add_screen', function(event) {
     $("#modal_add_screen").modal('show');  
 });
+
+$('body').on('click', 'button.edit_screen', function(event) {
+    $("#page_name_edit").val(localStorage.getItem('name_this_page'))
+    $("#modal_edit_screen").modal('show');  
+});
+
+$('body').on('click', '#myNavmenu', function(){
+    $('#modal_add_screen').modal('hide');
+    $("#modal_edit_screen").modal('hide');
+})
+
 
 
 // Получение метрик с сервера
@@ -217,15 +240,33 @@ $('.custom-file-input').on('change',function(){
 });
 
 
+// Получение скринов с сервера
+$(function get_screen(){
+    $.ajax({
+        type: "GET",
+        url: 'http://localhost:2113/feature-value/page/list',
+    }).done(function(data) {
+        data.forEach(function(screen){
+            append_list_screen(screen, screen.name)
+        });
+    });
+})
 
-function setimage(){
+$(function ($) {
+    $("#regForm").submit(function (e) {
+        made_screen();
+    });
+})
+
+
+//Создание и загрузка скринов на сервер
+function made_screen(){
     event.preventDefault();
-    
+    var local_name = $('#page_name').val()
     var data = new FormData();
     data.append('page_background', $('input[type=file]')[0].files[0]);
-    data.append('page_info', JSON.stringify({"name": $('#page_name').val(), "product": "test_product"}));
-  
-    jQuery.ajax({
+    data.append('page_info', JSON.stringify({"name": local_name, "product": "test_product"}));
+    $.ajax({
         url: 'http://localhost:2113/feature-value/page',
         data: data,
         cache: false,
@@ -235,7 +276,96 @@ function setimage(){
         method: 'POST',
         type: 'POST',
         success: function(data){
-            console.log('данные отправлены');
+            localStorage.setItem('id_this_page', data.id);
+            localStorage.setItem('name_this_page', local_name);
+            $('canvas').css('background', 'url(http://localhost/test_product/'+data.id+'.'+data.file_ext);
+            append_list_screen(data, local_name);
+            close_modal('#modal_add_screen');
         }
+    })
+}    
+
+
+// Изменение скринов
+$(function ($) {
+    $("#editForm").submit(function (e) {
+        edit_screen();
     });
+})
+
+function edit_screen(){
+    event.preventDefault();
+    let id_this_page = localStorage.getItem('id_this_page');
+    var data_edit = new FormData();
+    data_edit.append('page_background_edit', $('input[type=file]')[0].files[0]);
+    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
+    $.ajax({
+        url: 'http://localhost:2113/feature-value/page/'+ id_this_page,
+        data: data_edit,
+        cache: false,
+        processData: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        method: 'PUT',
+        type: 'PUT',
+        success: function(){
+            localStorage.setItem('name_this_page', $('#page_name_edit').val());
+            $('[id_img='+id_this_page+']').html($('#page_name_edit').val())
+            $('[id_img='+id_this_page+']').attr('name_img', $('#page_name_edit').val())
+            close_modal('#modal_edit_screen');
+        }
+    })
+} 
+
+
+// Действие при клике на скрин 
+$('body').on('click', '.open_screen', function() {
+    localStorage.setItem('id_this_page', event.target.getAttribute("id_img"));
+    localStorage.setItem('name_this_page', event.target.getAttribute("name_img"));
+    localStorage.setItem('ext_this_page', event.target.getAttribute("ext_img"));
+    $('canvas').css('background', 'url(http://localhost/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
+}); 
+
+
+// Удаление скрина
+$('body').on('click', '.delete_screen', function(e) {
+    e.preventDefault();
+    event.preventDefault();
+    delete_screen();
+}); 
+
+function delete_screen(){
+    let id_d = event.target.getAttribute('id_del');
+    $.ajax({
+        url: 'http://localhost:2113/feature-value/page/'+id_d,
+        type: 'DELETE'
+    });
+    $('[id_li ='+ id_d +']').remove();
+}
+
+
+// Сохранение страницы при перезагрузке
+$(function(){
+    if(localStorage.getItem('id_this_page') != null){
+        $('canvas').css('background', 'url(http://localhost/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page')); 
+    }
+})
+
+
+// Закрытие модальных окон при успехе
+function close_modal(this_modal) {
+    $(this_modal).modal('toggle');
+    $(this_modal+'input:eq(0)').val('');
+    $(this_modal+'input:eq(1)').val(''); 
+};
+
+// Функция добавления в список скринов
+function append_list_screen(data, local_name){
+    $('#list_screen').append(
+        $(`<li class="nav-item" id_li="${data.id}">
+        <button id_img="${data.id}" name_img="`+local_name+`" product_img="${data.product}" ext_img="`+data.file_ext+`" class="btn btn-info open_screen">`+local_name+`</button>
+        <button type="button" class="btn btn-danger delete_screen" id_del="${data.id}">
+        <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
+        </button></li>`)
+    );
 }
