@@ -1,16 +1,25 @@
 let deviationX = 8;
 let deviationY = 56;
 
+// для метрики
+let metrics_nunique = [];
+let max_nunique = 0;
+let serv_metrics;
+
 
 // Изменение метрики блока
 $('#put_metrica').on('click',function(){
     let parentId = $(event.target.closest('#modal_select_metrica')).attr('index');
     let metrica = $('#modal_select_metrica #select_metric').val()
     $.ajax({
-      url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
-      type: 'PUT',
-      data:  JSON.stringify({ "metrica": metrica}),
-      success: close_modal('#modal_select_metrica')
+        url: 'http://localhost:2113/feature-value/metric-area/'+parentId,
+        type: 'PUT',
+        data:  JSON.stringify({ "metrica": metrica}),
+        success: (function(response){
+            $('.block[index = '+ parentId+']').attr('metrica',metrica);
+            set_color_block();
+            close_modal('#modal_select_metrica');
+        })  
     });
 });
 
@@ -118,7 +127,7 @@ $(document).mouseup(
             }  
             send_area();
 
-            let elem = $(`<div class="block" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
+            let elem = $(`<div class="block" metrica="TEST" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
             $('div.main').append(elem);
             let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
             elem.css(position);                 
@@ -170,6 +179,7 @@ $('.open_nav').on('click', function(){
 // Открытие модальных окон
 $('body').on('click', 'div.block', function(event) {
     if (event.target.children.length != 0){ 
+        $("#modal_select_metrica .filter-option-inner-inner").html($(event.currentTarget).attr('metrica'))
         $('#modal_select_metrica').attr('index', $(event.currentTarget).attr('index'));
         $("#modal_select_metrica").modal('show');
     }
@@ -201,6 +211,7 @@ function fill_dropdowns_with_metrics(metrics){
         fill_metric_modal_dropdown(metrica);
     });
     $('.selectpicker').selectpicker('render');
+    set_color_block();
 }
 
 function get_metric(){
@@ -208,6 +219,7 @@ function get_metric(){
         type: "GET",
         url: 'http://localhost:2113/feature-value/transitions/test',
     }).done(function(data) {
+        serv_metrics = data;        
         fill_dropdowns_with_metrics(data);
     });
 };  
@@ -223,7 +235,7 @@ $.ajax({
     url: 'http://localhost:2113/feature-value/metric-area/list',
 }).done(function(data) {
     data.forEach(function(item){
-        let elem_serv = $(`<div class="block" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
+        let elem_serv = $(`<div class="block" metrica="${item.metrica}" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
         $('div.main').append(elem_serv);
         let position = {'width': `${item.width}%`, 'height': `${item.height}%`, 'top': `${item.y}%`, 'left': `${item.x}%`};
         elem_serv.css(position);     
@@ -232,6 +244,22 @@ $.ajax({
     });
 });
 
+
+// Измененеи цвета зон
+function set_color_block(){
+    serv_metrics.forEach(function(item){
+        metrics_nunique.push(item.users_nunique);
+    })
+    max_nunique = Math.max.apply(null, metrics_nunique);
+    serv_metrics.forEach(function(item){
+        $('[metrica ="'+ item.next_event +'"]').css('opacity', item.users_nunique/max_nunique);
+    })
+} 
+
+
+
+
+// ДЕЙСТВИЯ СО СКРИНАМИ
 
 $('.custom-file-input').on('change',function(){
     let filePath = $(this).val();
