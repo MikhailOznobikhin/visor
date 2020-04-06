@@ -105,7 +105,7 @@ $(document).mouseup(
             height = Math.abs(height); 
             y = y - height;
         }
-        if(width > 3 && height > 3 && resolution){     
+        if(width > 3 && height > 3 && height+ y < 107 && width+x < 100 && resolution){     
             function send_area(){
                 $.ajax({
                 type: 'POST',
@@ -127,7 +127,7 @@ $(document).mouseup(
             }  
             send_area();
 
-            let elem = $(`<div class="block" metrica="TEST" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
+            let elem = $(`<div class="block" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
             $('div.main').append(elem);
             let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
             elem.css(position);                 
@@ -251,12 +251,23 @@ function set_color_block(){
         metrics_nunique.push(item.users_nunique);
     })
     max_nunique = Math.max.apply(null, metrics_nunique);
-    serv_metrics.forEach(function(item){
-        $('[metrica ="'+ item.next_event +'"]').css('opacity', item.users_nunique/max_nunique);
-    })
+    if($('#select_method_area').val()=="Прозрачность"){
+        serv_metrics.forEach(function(item){
+            $('[metrica ="'+ item.next_event +'"]').css('opacity', item.users_nunique/max_nunique);
+            $('[metrica ="'+ item.next_event +'"]').css('background-color', 'red');
+        })
+    }else{
+        serv_metrics.forEach(function(item){
+            $('[metrica ="'+ item.next_event +'"]').css('background', 'hsl('+ item.users_nunique/max_nunique*120 +', 100%, 50%)');
+            $('[metrica ="'+ item.next_event +'"]').css('opacity', 0.6);
+        })
+    }
 } 
 
 
+$('#select_method_area').change(function(){
+    set_color_block();
+});
 
 
 // ДЕЙСТВИЯ СО СКРИНАМИ
