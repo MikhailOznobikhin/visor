@@ -96,15 +96,14 @@ canvas{
 .open_screen{
     text-align: center;
     justify-content: center;
-    margin-top: -6%;
-    margin-left: 5%;
+ 
+    margin-left: 0%;
     display: inline-block;
-    width: 70%;
+    width: 75%;
 }
 .delete_screen{
     float: right;
-    margin-top: -5%;
-    margin-right: 5%;
+    margin-right: 3%;
 }
 .edit_screen{
     margin-left: 2%;
@@ -115,11 +114,32 @@ canvas{
 }
 .buttons{
     position: absolute;
-    top: 90%;
+    top: 95%;
     left: 5%;
     width: 90%;
 }
 #select_method_area{
+    width: 90%;
+    margin-left: 5%;
+}
+.li_scrool{
+    display: inherit;
+    margin-top: 3%;
+}
+#list_screen{
+    width: 108%;  
+    height: 74%;   
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin-left: -8%;
+}
+.p_nav_left{
+    display: block;
+    font-size: 18px;
+    line-height: 20px;
+    margin: 10px 0 5px 15px;
+}
+#select_method_metrica{
     width: 90%;
     margin-left: 5%;
 }

@@ -24,14 +24,21 @@
   </nav>  
     
   <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left close_menu">
-    <p class="navmenu-brand">Выбор способа закрашивания</p>
+    <p class="p_nav_left">Выбор способа закрашивания</p>
     <select class="form-control" id="select_method_area">
       <option>Градиент</option>
       <option>Прозрачность</option>
     </select>
 
-    <p class="navmenu-brand">Выбор изображения</p>
-    <ul id="list_screen" class="nav navmenu-nav flex-column"></ul>
+    <p class="p_nav_left">Выбор метрики</p>
+    <select class="form-control" id="select_method_metrica"></select>
+
+    <!-- <div class="modal-body">
+      <select id="select_metric" class="selectpicker" data-style="btn-primary" data-live-search="true"></select>
+    </div> -->
+
+    <p class="p_nav_left">Выбор изображения</p>
+    <ul id="list_screen"></ul>
     <div class="buttons">
       <button class="btn btn-primary add_screen">Добавить</button>
       <button class="btn btn-warning edit_screen">Редактировать</button>

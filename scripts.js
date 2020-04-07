@@ -2,7 +2,7 @@ let deviationX = 0;
 let deviationY = 48;
 
 // для метрики
-let metrics_nunique = [];
+let arr_metrics_nunique = [];
 let max_nunique = 0;
 let serv_metrics;
 
@@ -133,12 +133,18 @@ function fill_metric_modal_dropdown(metrica) {
     $('#select_metric').append($(`<option>${metrica.next_event}</option>`));
 }
 
-function fill_dropdowns_with_metrics(metrics){
+function fill_dropdowns_with_metrics(metrics){ 
+    for (var key in metrics[0]) {
+        if(typeof(metrics[0][key])!="string"){
+            $('#select_method_metrica').append($(`<option>${key}</option>`));
+        }
+    }    
+
     metrics.forEach(function(metrica, _, _) {
         fill_metric_modal_dropdown(metrica);
     });
     $('.selectpicker').selectpicker('render');
-    set_color_block();
+    set_global_metrics();
 }
 
 function get_metric(){
@@ -146,7 +152,7 @@ function get_metric(){
         type: "GET",
         url: 'http://localhost:2113/feature-value/transitions/test',
     }).done(function(data) {
-        serv_metrics = data;        
+        serv_metrics = data;    
         fill_dropdowns_with_metrics(data);
     });
 };  
@@ -162,17 +168,27 @@ $('#put_metrica').on('click',function(){
         data:  JSON.stringify({ "metrica": metrica}),
         success: (function(response){
             $('.block[index = '+ parentId+']').attr('metrica',metrica);
-            set_color_block();
+            set_color_area();
             close_modal('#modal_select_metrica');
         })  
     });
 });
 
+function set_global_metrics(){
+    localStorage.setItem('metrica_g', $('#select_method_metrica').val())
+    set_color_area();
+}
+
+// Изменение глобальной метрики
+$('#select_method_metrica').change(function(){
+    set_global_metrics()
+});
+
 
 $(function(){
     get_metric();
-    get_area_server();
-    setTimeout(highlight_this_page,500);
+    get_area_server(); 
+    setTimeout(set_active_page,500);
 })
 
 
@@ -194,25 +210,28 @@ function get_area_server(){
                 canDrawSelection = false;           
             }
         });
-        set_color_block();
+        set_color_area();
     });
 }
 
 
 // Измененеи цвета зон
-function set_color_block(){
+function set_color_area(){
+    var g_metric= localStorage.getItem('metrica_g');
+    var test = "users_nunique";
     serv_metrics.forEach(function(item){
-        metrics_nunique.push(item.users_nunique);
+        arr_metrics_nunique.push(item[g_metric]);
     })
-    max_nunique = Math.max.apply(null, metrics_nunique);
+    max_nunique = Math.max.apply(null, arr_metrics_nunique);
+    arr_metrics_nunique = [];
     if($('#select_method_area').val()=="Прозрачность"){
         serv_metrics.forEach(function(item){
-            $('[metrica ="'+ item.next_event +'"]').css('opacity', item.users_nunique/max_nunique);
+            $('[metrica ="'+ item.next_event +'"]').css('opacity', item[g_metric]/max_nunique);
             $('[metrica ="'+ item.next_event +'"]').css('background-color', 'red');
         })
     }else{
         serv_metrics.forEach(function(item){
-            $('[metrica ="'+ item.next_event +'"]').css('background', 'hsl('+ item.users_nunique/max_nunique*120 +', 100%, 50%)');
+            $('[metrica ="'+ item.next_event +'"]').css('background', 'hsl('+ item[g_metric]/max_nunique*120 +', 100%, 50%)');
             $('[metrica ="'+ item.next_event +'"]').css('opacity', 0.6);
         })
     }
@@ -220,7 +239,7 @@ function set_color_block(){
 
 
 $('#select_method_area').change(function(){
-    set_color_block();
+    set_color_area();
 });
 
 
@@ -335,7 +354,7 @@ $('body').on('click', '.open_screen', function() {
     $('canvas').css('background', 'url(http://localhost/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
     $('canvas').css('background-size','100% 100%');
     get_area_server();
-    highlight_this_page();
+    set_active_page();
 }); 
 
 
@@ -375,7 +394,7 @@ $(function(){
 // Функция добавления в список скринов
 function append_list_screen(data, local_name){
     $('#list_screen').append(
-        $(`<li class="nav-item" id_li="${data.id}">
+        $(`<li class="nav-item li_scrool" id_li="${data.id}">
         <button id_img="${data.id}" name_img="`+local_name+`" product_img="${data.product}" ext_img="`+data.file_ext+`" class="btn btn-info open_screen">`+local_name+`</button>
         <button type="button" class="btn btn-danger delete_screen" id_del="${data.id}">
         <i class="material-icons del_img" style="pointer-events: none;">highlight_off</i>
@@ -385,7 +404,7 @@ function append_list_screen(data, local_name){
 
 
 // Выделение активного скрина
-function highlight_this_page(){
+function set_active_page(){
     $('#list_screen button').removeClass('active');
     $('#list_screen [name_img = '+localStorage.getItem('name_this_page')+']').addClass('active');
 }
