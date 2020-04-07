@@ -1,5 +1,5 @@
 let deviationX = 0;
-let deviationY = 12;
+let deviationY = 48;
 
 // для метрики
 let metrics_nunique = [];
@@ -110,7 +110,7 @@ $(document).mouseup(
             }  
             send_area();
 
-            let elem = $(`<div class="block" metrica="non_metric" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
+            let elem = $(`<div class="block" page="`+ localStorage.getItem('name_this_page') +`" metrica="non_metric" index="0"><i class="material-icons del_img" style="pointer-events: none;">highlight_off</i></div>`);
             $('div.main').append(elem);
             let position = {'width': `${width}%`, 'height': `${height}%`, 'top': `${y}%`, 'left': `${x}%`};
             elem.css(position);                 
@@ -186,7 +186,7 @@ function get_area_server(){
     }).done(function(data) {
         data.forEach(function(item){
             if(item.page == localStorage.getItem('name_this_page')){
-                let elem_serv = $(`<div class="block"  metrica="${item.metrica}" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
+                let elem_serv = $(`<div class="block" page="`+localStorage.getItem('name_this_page')+`" metrica="${item.metrica}" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
                 $('div.main').append(elem_serv);
                 let position = {'width': `${item.width}%`, 'height': `${item.height}%`, 'top': `${item.y}%`, 'left': `${item.x}%`};
                 elem_serv.css(position);     
@@ -225,15 +225,16 @@ $('#select_method_area').change(function(){
 
 
 // Удаление зон
-$('body').on('click', '.del_img', function() {
-    let parent = event.target.closest('div'); 
+$('body').on('click','.del_img', function(){delete_area(event.target.closest('div'))}); 
+
+function delete_area(parent) {
     $.ajax({
         url: 'http://localhost:2113/feature-value/metric-area/'+$(parent).attr('index'),
         type: 'DELETE'
     });
     delete selections[$(parent).attr('sel_index')]
     parent.remove()
-}); 
+}
 
 
 
@@ -349,7 +350,14 @@ function delete_screen(){
     let id_d = event.target.getAttribute('id_del');
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+id_d,
-        type: 'DELETE'
+        type: 'DELETE',
+        success: function(){
+            let del_serv_area = Object.values($('[page="'+ localStorage.getItem('name_this_page') +'"]'));
+            let unnecessary_ending = del_serv_area.splice(-2,2); //Не нужная перемення заберающая в себя окончание объекта
+            del_serv_area.forEach(function(item){
+                delete_area(item);            
+            })
+        }
     });
     $('[id_li ='+ id_d +']').remove();
 }
