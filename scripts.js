@@ -177,6 +177,7 @@ $('#put_metrica').on('click',function(){
 function set_global_metrics(){
     localStorage.setItem('metrica_g', $('#select_method_metrica').val())
     set_color_area();
+    
 }
 
 // Изменение глобальной метрики
@@ -187,9 +188,10 @@ $('#select_method_metrica').change(function(){
 
 $(function(){
     get_metric();
-    get_area_server(); 
-    setTimeout(set_active_page,500);
+    get_area_server();  
 })
+
+
 
 
 
@@ -275,6 +277,7 @@ $(function get_screen(){
         data.forEach(function(screen){
             append_list_screen(screen, screen.name)
         });
+        set_active_page();
     });
 })
 
