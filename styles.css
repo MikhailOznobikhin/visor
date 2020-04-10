@@ -17,11 +17,16 @@ canvas{
     top: 56px;
 }
 .logo{
-    font-size: x-large;
+    font-size: xx-large;
 }
 .sub{
+    padding: 12px 0 10px 0px;
     font-size: x-large;
 }
+.active_prod{
+    border-bottom: 3px yellow solid;
+}
+
 .block{
     position: absolute;
     border-radius: 5px;
@@ -80,6 +85,9 @@ canvas{
     position: fixed;
     width: 100%;
     z-index: 9999;
+    height: 62px;
+    left: 0;
+    padding: 0px 0px 0px 10px;
 }
 .main{
     margin-top: 62px;
@@ -143,3 +151,13 @@ canvas{
     width: 90%;
     margin-left: 5%;
 }
+
+.success{
+    position: absolute;
+    top: 7%;
+    transition: 4s;
+    display: none;
+    right: 0;
+    z-index: 9999;
+}
+

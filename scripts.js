@@ -5,7 +5,7 @@ let deviationY = 48;
 let arr_metrics_nunique = [];
 let max_nunique = 0;
 let serv_metrics;
-
+let g_product = 'VMmanager';
 
 // Онлайн показ размера блока
 let canvas = document.createElement("canvas")
@@ -189,6 +189,7 @@ $('#select_method_metrica').change(function(){
 $(function(){
     get_metric();
     get_area_server();  
+    get_screen();
 })
 
 
@@ -217,10 +218,9 @@ function get_area_server(){
 }
 
 
-// Измененеи цвета зон
+// Изменениe цвета зон
 function set_color_area(){
     var g_metric= localStorage.getItem('metrica_g');
-    var test = "users_nunique";
     serv_metrics.forEach(function(item){
         arr_metrics_nunique.push(item[g_metric]);
     })
@@ -269,21 +269,46 @@ $('.custom-file-input').on('change',function(){
 
 
 // Получение скринов с сервера
-$(function get_screen(){
+function get_screen(){
     $.ajax({
         type: "GET",
         url: 'http://localhost:2113/feature-value/page/list',
     }).done(function(data) {
+        $('#list_screen li').remove();
         data.forEach(function(screen){
-            append_list_screen(screen, screen.name)
+            if(screen.product == localStorage.getItem('product')){
+                append_list_screen(screen, screen.name)
+            }
         });
         set_active_page();
     });
-})
+}
 
 $(function ($) {
     $("#regForm").submit(function (e) {
-        made_screen();
+        var same_names = 0;
+        for(i = 0; i < $('#list_screen .open_screen').length; i++){
+            if(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML == $('#page_name').val()){
+                console.log(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML)
+                same_names++
+            }
+        }
+        if(same_names > 0){
+            console.log(same_names)
+            console.log('такое имя уже есть!!!')
+            $('#page_name').css('border',' 1px red solid')
+            
+            $('#error-alert').css('display','block')
+            setTimeout(function(){$('#error-alert').css('opacity','0')},2000);
+            setTimeout(function(){$('#error-alert').css('display','none')},5000);
+            setTimeout(function(){$('#error-alert').css('opacity','1')},5000);
+        }else{
+            made_screen();
+            $('#success-alert').css('display','block')
+            setTimeout(function(){$('#success-alert').css('opacity','0')},2000);
+        }
+
+        same_names = 0;
     });
 })
 
@@ -294,7 +319,7 @@ function made_screen(){
     var local_name = $('#page_name').val()
     var data = new FormData();
     data.append('page_background', $('input[type=file]')[0].files[0]);
-    data.append('page_info', JSON.stringify({"name": local_name, "product": "test_product"}));
+    data.append('page_info', JSON.stringify({"name": local_name, "product": g_product}));
     $.ajax({
         url: 'http://localhost:2113/feature-value/page',
         data: data,
@@ -307,7 +332,7 @@ function made_screen(){
         success: function(data){
             localStorage.setItem('id_this_page', data.id);
             localStorage.setItem('name_this_page', local_name);
-            $('canvas').css('background', 'url(http://localhost/test_product/'+data.id+'.'+data.file_ext);
+            $('canvas').css('background', 'url(http://localhost/'+ g_product +'/'+data.id+'.'+data.file_ext);
             $('canvas').css('background-size', '100% 100%');
             append_list_screen(data, local_name);
             close_modal('#modal_add_screen');
@@ -328,7 +353,7 @@ function edit_screen(){
     let id_this_page = localStorage.getItem('id_this_page');
     var data_edit = new FormData();
     data_edit.append('page_background_edit', $('input[type=file]')[0].files[0]);
-    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": "test_product"}));
+    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": g_product}));
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+ id_this_page,
         data: data_edit,
@@ -354,7 +379,7 @@ $('body').on('click', '.open_screen', function() {
     localStorage.setItem('name_this_page', event.target.getAttribute("name_img"));
     localStorage.setItem('ext_this_page', event.target.getAttribute("ext_img"));
     $('.block').remove();
-    $('canvas').css('background', 'url(http://localhost/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
+    $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
     $('canvas').css('background-size','100% 100%');
     get_area_server();
     set_active_page();
@@ -387,8 +412,12 @@ function delete_screen(){
 
 // Сохранение открытого скрина при перезагрузке
 $(function(){
+    if(localStorage.getItem('product') != null){
+        g_product = localStorage.getItem('product');
+    }
+
     if(localStorage.getItem('id_this_page') != null){
-        $('canvas').css('background', 'url(http://localhost/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
+        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
         $('canvas').css('background-size','100% 100%');
     }
 })
@@ -467,3 +496,36 @@ $('.open_nav').on('click', function(){
     }   
 });
     
+
+$('.sub').on('click', function(e){
+    localStorage.setItem('product',e.target.innerHTML);
+    g_product = e.target.innerHTML;
+    $('a').removeClass('active_prod');
+    $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
+
+
+    function test(){
+        console.log('id: '+ $('#list_screen .open_screen').attr('id_img') +' name: '+ $('#list_screen .open_screen').attr('name_img') +' ext: '+ $('#list_screen .open_screen').attr('ext_img'))
+        $('.block').remove();
+        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+ $('#list_screen .open_screen').attr('id_img')+'.'+$('#list_screen .open_screen').attr('ext_img'));
+        $('canvas').css('background-size','100% 100%');
+        localStorage.setItem('id_this_page', $('#list_screen .open_screen').attr('id_img'));
+        localStorage.setItem('name_this_page', $('#list_screen .open_screen').attr('name_img'));
+        localStorage.setItem('ext_this_page', $('#list_screen .open_screen').attr('ext_img'));
+        get_area_server();
+        set_active_page();
+    }
+
+
+    setTimeout(test,100);
+
+    get_screen();
+    
+})
+
+$(function(){
+    if(localStorage.getItem('product')!=null){
+        g_product = localStorage.getItem('product');
+        $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
+    }
+})
