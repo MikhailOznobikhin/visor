@@ -5,7 +5,7 @@ let deviationY = 48;
 let arr_metrics_nunique = [];
 let max_nunique = 0;
 let serv_metrics;
-let g_product = 'VMmanager';
+
 
 // Онлайн показ размера блока
 let canvas = document.createElement("canvas")
@@ -498,34 +498,42 @@ $('.open_nav').on('click', function(){
     
 
 $('.sub').on('click', function(e){
-    localStorage.setItem('product',e.target.innerHTML);
-    g_product = e.target.innerHTML;
+    open_first_screen(e)
+})
+function open_first_screen(e){
+    if(e.target.innerHTML == undefined){
+        localStorage.setItem('product',"VMmanager");
+        g_product = "VMmanager";
+    }else{
+        localStorage.setItem('product',e.target.innerHTML);
+        g_product = e.target.innerHTML;
+    }
     $('a').removeClass('active_prod');
     $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
-
+    get_screen();
 
     function test(){
-        console.log('id: '+ $('#list_screen .open_screen').attr('id_img') +' name: '+ $('#list_screen .open_screen').attr('name_img') +' ext: '+ $('#list_screen .open_screen').attr('ext_img'))
-        $('.block').remove();
-        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+ $('#list_screen .open_screen').attr('id_img')+'.'+$('#list_screen .open_screen').attr('ext_img'));
-        $('canvas').css('background-size','100% 100%');
         localStorage.setItem('id_this_page', $('#list_screen .open_screen').attr('id_img'));
         localStorage.setItem('name_this_page', $('#list_screen .open_screen').attr('name_img'));
         localStorage.setItem('ext_this_page', $('#list_screen .open_screen').attr('ext_img'));
+   
+        console.log('id: '+ localStorage.getItem('id_this_page') +' name: '+ localStorage.getItem('name_this_page') +' ext: '+ localStorage.getItem('ext_this_page'))
+        $('.block').remove();
+        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+ localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
+        $('canvas').css('background-size','100% 100%');
         get_area_server();
         set_active_page();
     }
-
-
-    setTimeout(test,100);
-
-    get_screen();
-    
-})
+    $('#list_screen').bind("DOMSubtreeModified",test)
+}
 
 $(function(){
     if(localStorage.getItem('product')!=null){
-        g_product = localStorage.getItem('product');
+        let g_product = localStorage.getItem('product');
         $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
+    }else{
+        let g_product = 'VMmanager';
+        open_first_screen($('a:contains("VMmanager")')[0])
     }
+    
 })
