@@ -174,7 +174,7 @@ $('#put_metrica').on('click',function(){
 });
 
 function set_global_metrics(){
-    localStorage.setItem('metrica_g', $('#select_method_metrica').val())
+    localStorage.setItem('global_metrica', $('#select_method_metrica').val())
     set_color_area();
     
 }
@@ -223,7 +223,7 @@ function get_area_server(){
 
 // Изменениe цвета зон
 function set_color_area(){
-    var global_metric= localStorage.getItem('metrica_g');
+    var global_metric= localStorage.getItem('global_metrica');
     let arr_metrics_nunique = [];
     serv_metrics.forEach(function(item){
         arr_metrics_nunique.push(item[global_metric]);
@@ -293,14 +293,11 @@ $(function ($) {
         var same_names = 0;
         $('#list_screen .open_screen').each(function(i){
             if(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML == $('#page_name').val()){
-                console.log(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML)
                 same_names++
             }
         })
 
         if(same_names > 0){
-            console.log(same_names)
-            console.log('такое имя уже есть!!!')
             $('#page_name').css('border',' 1px red solid')
             
             $('#error-alert').css('display','block')
@@ -343,7 +340,6 @@ function made_screen(){
             $('canvas').css('background-size', '100% 100%');
             append_list_screen(data, local_name);
             close_modal('#modal_add_screen');
-            console.log('get')
             get_area_server();
             set_active_page();
         }
