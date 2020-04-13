@@ -4,7 +4,7 @@ let deviationY = 48;
 // для метрики
 let max_nunique = 0;
 let serv_metrics;
-
+let local_all_area = [];
 
 // Онлайн показ размера блока
 let canvas = document.createElement("canvas")
@@ -211,6 +211,10 @@ function get_area_server(){
                 selections[index] = position;
                 canDrawSelection = false;           
             }
+            local_all_area.push({
+                'id': item.id,
+                'page':item.page
+            })
         });
         set_color_area();
     });
@@ -304,12 +308,13 @@ $(function ($) {
             setTimeout(function(){$('#error-alert').css('display','none')},5000);
             setTimeout(function(){$('#error-alert').css('opacity','1')},5000);
         }else{
+            $('#page_name').css('border','')
             made_screen();
             $('#success-alert').css('display','block')
             setTimeout(function(){$('#success-alert').css('opacity','0')},2000);
-            
+            setTimeout(function(){$('#success-alert').css('display','none')},6000);
+            setTimeout(function(){$('#success-alert').css('opacity','1')},6000);
         }
-
         same_names = 0;
     });
 })
@@ -338,6 +343,8 @@ function made_screen(){
             $('canvas').css('background-size', '100% 100%');
             append_list_screen(data, local_name);
             close_modal('#modal_add_screen');
+            console.log('get')
+            get_area_server();
             set_active_page();
         }
     })
@@ -402,15 +409,19 @@ function delete_screen(){
         url: 'http://localhost:2113/feature-value/page/'+id_d,
         type: 'DELETE',
         success: function(){
-            let del_serv_area = Object.values($('[page="'+ localStorage.getItem('name_this_page') +'"]'));
-            del_serv_area.splice(-2,2);
-            del_serv_area.forEach(function(item){
-                delete_area(item);            
+            local_all_area.forEach(function(item){
+                if(item.page == $('[id_img='+id_d+']').html()){
+                    $.ajax({
+                        url: 'http://localhost:2113/feature-value/metric-area/'+item.id,
+                        type: 'DELETE'
+                    });
+                }
             })
+            $('[id_li ='+ id_d +']').remove();
         }
     });
-    $('[id_li ='+ id_d +']').remove();
-}
+}            
+
 
 
 // Сохранение открытого скрина при перезагрузке
