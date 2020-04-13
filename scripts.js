@@ -2,7 +2,6 @@ let deviationX = 0;
 let deviationY = 48;
 
 // для метрики
-let arr_metrics_nunique = [];
 let max_nunique = 0;
 let serv_metrics;
 
@@ -220,20 +219,21 @@ function get_area_server(){
 
 // Изменениe цвета зон
 function set_color_area(){
-    var g_metric= localStorage.getItem('metrica_g');
+    var global_metric= localStorage.getItem('metrica_g');
+    let arr_metrics_nunique = [];
     serv_metrics.forEach(function(item){
-        arr_metrics_nunique.push(item[g_metric]);
+        arr_metrics_nunique.push(item[global_metric]);
     })
     max_nunique = Math.max.apply(null, arr_metrics_nunique);
     arr_metrics_nunique = [];
     if($('#select_method_area').val()=="Прозрачность"){
         serv_metrics.forEach(function(item){
-            $('[metrica ="'+ item.next_event +'"]').css('opacity', item[g_metric]/max_nunique);
+            $('[metrica ="'+ item.next_event +'"]').css('opacity', item[global_metric]/max_nunique);
             $('[metrica ="'+ item.next_event +'"]').css('background-color', 'red');
         })
     }else{
         serv_metrics.forEach(function(item){
-            $('[metrica ="'+ item.next_event +'"]').css('background', 'hsl('+ item[g_metric]/max_nunique*120 +', 100%, 50%)');
+            $('[metrica ="'+ item.next_event +'"]').css('background', 'hsl('+ item[global_metric]/max_nunique*120 +', 100%, 50%)');
             $('[metrica ="'+ item.next_event +'"]').css('opacity', 0.6);
         })
     }
@@ -285,14 +285,15 @@ function get_screen(){
 }
 
 $(function ($) {
-    $("#regForm").submit(function (e) {
+    $("#add_screen_form").submit(function (e) {
         var same_names = 0;
-        for(i = 0; i < $('#list_screen .open_screen').length; i++){
+        $('#list_screen .open_screen').each(function(i){
             if(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML == $('#page_name').val()){
                 console.log(Object.entries($('#list_screen .open_screen'))[i][1].innerHTML)
                 same_names++
             }
-        }
+        })
+
         if(same_names > 0){
             console.log(same_names)
             console.log('такое имя уже есть!!!')
@@ -306,6 +307,7 @@ $(function ($) {
             made_screen();
             $('#success-alert').css('display','block')
             setTimeout(function(){$('#success-alert').css('opacity','0')},2000);
+            
         }
 
         same_names = 0;
@@ -336,6 +338,7 @@ function made_screen(){
             $('canvas').css('background-size', '100% 100%');
             append_list_screen(data, local_name);
             close_modal('#modal_add_screen');
+            set_active_page();
         }
     })
 }    
@@ -400,7 +403,7 @@ function delete_screen(){
         type: 'DELETE',
         success: function(){
             let del_serv_area = Object.values($('[page="'+ localStorage.getItem('name_this_page') +'"]'));
-            let unnecessary_ending = del_serv_area.splice(-2,2); //Не нужная перемення заберающая в себя окончание объекта
+            del_serv_area.splice(-2,2);
             del_serv_area.forEach(function(item){
                 delete_area(item);            
             })
@@ -512,19 +515,17 @@ function open_first_screen(e){
     $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
     get_screen();
 
-    function test(){
+    function set_this_page(){
         localStorage.setItem('id_this_page', $('#list_screen .open_screen').attr('id_img'));
         localStorage.setItem('name_this_page', $('#list_screen .open_screen').attr('name_img'));
         localStorage.setItem('ext_this_page', $('#list_screen .open_screen').attr('ext_img'));
-   
-        console.log('id: '+ localStorage.getItem('id_this_page') +' name: '+ localStorage.getItem('name_this_page') +' ext: '+ localStorage.getItem('ext_this_page'))
         $('.block').remove();
         $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+ localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
         $('canvas').css('background-size','100% 100%');
         get_area_server();
         set_active_page();
     }
-    $('#list_screen').bind("DOMSubtreeModified",test)
+    $('#list_screen').bind("DOMSubtreeModified",set_this_page)
 }
 
 $(function(){

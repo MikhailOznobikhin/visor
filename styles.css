@@ -9,7 +9,7 @@ body{
     padding-right: 0 !important
 }
 canvas{
-    height: 93.5%;
+    height: calc(100% - 62px);
     width: 100%;    
 }
 #myNavmenu{
