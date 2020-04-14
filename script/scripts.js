@@ -195,7 +195,6 @@ $(function(){
 
 
 
-
 // ДЕЙСТВИЯ С ЗОНАМИ
 // Отрисовка зон с бэка
 function get_area_server(){
@@ -204,7 +203,6 @@ function get_area_server(){
         url: 'http://localhost:2113/feature-value/metric-area/list',
     }).done(function(data) {
         console.log('За зонами к серверу');
-        console.log(local_all_area.length);
         if($('.block').length == 0){
             data.forEach(function(item){
                 if(item.page == localStorage.getItem('name_this_page')){
@@ -536,7 +534,8 @@ function open_first_screen(e){
     $('a').removeClass('active_prod');
     $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
     get_screen();
-    $('#list_screen').bind("DOMSubtreeModified",set_this_page)
+    // $('#list_screen').bind("DOMSubtreeModified",set_this_page)
+    $('#list_screen').one("DOMNodeInserted", function (event) { set_this_page() });
 }
 
 
