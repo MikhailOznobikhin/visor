@@ -10,22 +10,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/4.0.0/js/jasny-bootstrap.min.js"></script>
   <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
   <link href="styles.css"  rel="stylesheet">
+  <link href="fonts.css"  rel="stylesheet">
 </head>
 <body>
   <nav class="navbar navbar-dark static-top navhead" style="left: 0;">
     <a class="navbar-brand logo" href="#"><b>ISPvisor</b></a>
-    <div class="container">
-        <a class="navbar-brand sub" href="#"><b>VMmanager</b></a>
-        <a class="navbar-brand sub" href="#"><b>DCImanager</b></a>
-        <a class="navbar-brand sub" href="#"><b>Vepp</b></a>
-        <a class="navbar-brand sub" href="#"><b>Cartbee</b></a>
-        <a class="navbar-brand sub" href="#"><b>Cartbee-shop</b></a>
+    <div class="container" style="width: 80%;">
+        <a class="navbar-brand sub" href="#">VMmanager</a>
+        <a class="navbar-brand sub" href="#">DCImanager</a>
+        <a class="navbar-brand sub" href="#">Vepp</a>
+        <a class="navbar-brand sub" href="#">Cartbee</a>
+        <a class="navbar-brand sub" href="#">Сartbee-shop</a>
       </div>
+      <a class="navbar-brand logo" href="#" ><span class="material-icons" style="font-size: xx-large;"> question_answer<span></a>
   </nav>  
     
   <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left close_menu">
-    <p class="navmenu-brand">Выбор изображения</p>
-    <ul id="list_screen" class="nav navmenu-nav flex-column"></ul>
+    <p class="p_nav_left">Выбор способа закрашивания</p>
+    <select class="form-control" id="select_method_area">
+      <option>Градиент</option>
+      <option>Прозрачность</option>
+    </select>
+
+    <p class="p_nav_left">Выбор метрики</p>
+    <select class="form-control" id="select_method_metrica"></select>
+
+    <!-- <div class="modal-body">
+      <select id="select_metric" class="selectpicker" data-style="btn-primary" data-live-search="true"></select>
+    </div> -->
+
+    <p class="p_nav_left">Выбор изображения</p>
+    <ul id="list_screen"></ul>
     <div class="buttons">
       <button class="btn btn-primary add_screen">Добавить</button>
       <button class="btn btn-warning edit_screen">Редактировать</button>
@@ -66,7 +81,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="modal-body">
-          <form id="regForm">
+          <form id="add_screen_form">
             <p><input class="form-control" type="text" id="page_name" placeholder="Enter page name"></p>
             <p><input class="form-control-file" type="file" id="page_background"></p>
             <input class="btn btn-primary" type="submit" value="Отправить" id="send_screen">
@@ -94,7 +109,14 @@
     </div>
   </div>
   
-  
+  <div class="alert alert-success hidden success" id="success-alert">
+    <div>Скриншот был успешно загружен.</div>
+  </div>
+
+  <div class="alert alert-danger hidden success" id="error-alert">
+    <div>Скриншот с таким именем уже существует.</div>
+  </div>
+
   <script src="scripts.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

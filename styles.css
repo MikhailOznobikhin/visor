@@ -1,4 +1,5 @@
 body{
+    font-family: 'UbuntuMono-Regular',sans-serif;
     position: absolute;
     top: 0;
     left: 0;
@@ -9,21 +10,24 @@ body{
     padding-right: 0 !important
 }
 canvas{
-    height: 100%;
-    width: 100%;
-    background: url(img.jpg) no-repeat; 
-    background-size: 100% 100%;
+    height: calc(100% - 62px);
+    width: 100%;    
 }
 #myNavmenu{
     transition: 0.5s;
     top: 56px;
 }
 .logo{
-    font-size: x-large;
+    font-size: xx-large;
 }
 .sub{
+    padding: 12px 0 10px 0px;
     font-size: x-large;
 }
+.active_prod{
+    border-bottom: 3px yellow solid;
+}
+
 .block{
     position: absolute;
     border-radius: 5px;
@@ -82,9 +86,12 @@ canvas{
     position: fixed;
     width: 100%;
     z-index: 9999;
+    height: 62px;
+    left: 0;
+    padding: 0px 0px 0px 10px;
 }
 .main{
-    margin-top: 56px;
+    margin-top: 62px;
 }
 .open_menu{
     left: 0px;
@@ -98,26 +105,60 @@ canvas{
 .open_screen{
     text-align: center;
     justify-content: center;
-    margin-top: -6%;
-    margin-left: 5%;
+ 
+    margin-left: 0%;
     display: inline-block;
-    width: 70%;
+    width: 75%;
 }
 .delete_screen{
     float: right;
-    margin-top: -5%;
-    margin-right: 5%;
+    margin-right: 3%;
 }
 .edit_screen{
     margin-left: 2%;
-    width: 48%;
+    width: 47%;
 }
 .add_screen{
-    width: 47.5%;
+    width: 47%;
 }
 .buttons{
     position: absolute;
-    top: 90%;
+    top: 95%;
     left: 5%;
     width: 90%;
 }
+#select_method_area{
+    width: 90%;
+    margin-left: 5%;
+}
+.li_scrool{
+    display: inherit;
+    margin-top: 3%;
+}
+#list_screen{
+    width: 108%;  
+    height: 74%;   
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin-left: -8%;
+}
+.p_nav_left{
+    display: block;
+    font-size: 18px;
+    line-height: 20px;
+    margin: 10px 0 5px 15px;
+}
+#select_method_metrica{
+    width: 90%;
+    margin-left: 5%;
+}
+
+.success{
+    position: absolute;
+    top: 7%;
+    transition: 4s;
+    display: none;
+    right: 0;
+    z-index: 9999;
+}
+
