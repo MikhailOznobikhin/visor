@@ -103,7 +103,7 @@ $(document).mouseup(
                 }),
                 success: (function(response){
                     index = response.id; 
-                    adding_index()
+                    adding_index();
                 })
                 });
             }  
@@ -119,6 +119,7 @@ $(document).mouseup(
                 elem.attr('index',index);
                 elem.children('i').removeAttr('style');
                 selections[index] = position;
+                open_modal_edit_area(elem);
             } 
         }
     }
@@ -194,7 +195,6 @@ $(function(){
 
 
 
-
 // ДЕЙСТВИЯ С ЗОНАМИ
 // Отрисовка зон с бэка
 function get_area_server(){
@@ -202,22 +202,26 @@ function get_area_server(){
         type: "GET",
         url: 'http://localhost:2113/feature-value/metric-area/list',
     }).done(function(data) {
-        data.forEach(function(item){
-            if(item.page == localStorage.getItem('name_this_page')){
-                let elem_serv = $(`<div class="block" page="`+localStorage.getItem('name_this_page')+`" metrica="${item.metrica}" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
-                $('div.main').append(elem_serv);
-                let position = {'width': `${item.width}%`, 'height': `${item.height}%`, 'top': `${item.y}%`, 'left': `${item.x}%`};
-                elem_serv.css(position);     
-                selections[index] = position;
-                canDrawSelection = false;           
-            }
-            local_all_area.push({
-                'id': item.id,
-                'page':item.page
-            })
-        });
-        set_color_area();
+        console.log('За зонами к серверу');
+        if($('.block').length == 0){
+            data.forEach(function(item){
+                if(item.page == localStorage.getItem('name_this_page')){
+                    let elem_serv = $(`<div class="block" page="`+localStorage.getItem('name_this_page')+`" metrica="${item.metrica}" index="${item.id}" ><i class="material-icons del_img">highlight_off</i></div>`);
+                    $('div.main').append(elem_serv);
+                    let position = {'width': `${item.width}%`, 'height': `${item.height}%`, 'top': `${item.y}%`, 'left': `${item.x}%`};
+                    elem_serv.css(position);     
+                    selections[index] = position;
+                    canDrawSelection = false;           
+                }
+                local_all_area.push({
+                    'id': item.id,
+                    'page':item.page
+                })
+            });
+        }
+    set_color_area();
     });
+
 }
 
 
@@ -323,7 +327,7 @@ function made_screen(){
     var local_name = $('#page_name').val()
     var data = new FormData();
     data.append('page_background', $('input[type=file]')[0].files[0]);
-    data.append('page_info', JSON.stringify({"name": local_name, "product": g_product}));
+    data.append('page_info', JSON.stringify({"name": local_name, "product": global_product}));
     $.ajax({
         url: 'http://localhost:2113/feature-value/page',
         data: data,
@@ -336,7 +340,7 @@ function made_screen(){
         success: function(data){
             localStorage.setItem('id_this_page', data.id);
             localStorage.setItem('name_this_page', local_name);
-            $('canvas').css('background', 'url(http://localhost/'+ g_product +'/'+data.id+'.'+data.file_ext);
+            $('canvas').css('background', 'url(http://localhost/'+ global_product +'/'+data.id+'.'+data.file_ext);
             $('canvas').css('background-size', '100% 100%');
             append_list_screen(data, local_name);
             close_modal('#modal_add_screen');
@@ -359,7 +363,7 @@ function edit_screen(){
     let id_this_page = localStorage.getItem('id_this_page');
     var data_edit = new FormData();
     data_edit.append('page_background_edit', $('input[type=file]')[0].files[0]);
-    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": g_product}));
+    data_edit.append('page_info', JSON.stringify({"name": $('#page_name_edit').val(), "product": global_product}));
     $.ajax({
         url: 'http://localhost:2113/feature-value/page/'+ id_this_page,
         data: data_edit,
@@ -385,7 +389,7 @@ $('body').on('click', '.open_screen', function() {
     localStorage.setItem('name_this_page', event.target.getAttribute("name_img"));
     localStorage.setItem('ext_this_page', event.target.getAttribute("ext_img"));
     $('.block').remove();
-    $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
+    $('canvas').css('background', 'url(http://localhost/'+global_product+'/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
     $('canvas').css('background-size','100% 100%');
     get_area_server();
     set_active_page();
@@ -423,11 +427,11 @@ function delete_screen(){
 // Сохранение открытого скрина при перезагрузке
 $(function(){
     if(localStorage.getItem('product') != null){
-        g_product = localStorage.getItem('product');
+        global_product = localStorage.getItem('product');
     }
 
     if(localStorage.getItem('id_this_page') != null){
-        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
+        $('canvas').css('background', 'url(http://localhost/'+global_product+'/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
         $('canvas').css('background-size','100% 100%');
     }
 })
@@ -454,11 +458,20 @@ function set_active_page(){
 
 // МОДАЛЬНЫЕ ОКНА
 // Открытие модальных окон
-$('body').on('click', 'div.block', function(event) {
-    if (event.target.children.length != 0){ 
+// модалка для редактирования зон
+function open_modal_edit_area(event){
+    if($(event.currentTarget).length == 0){
+        $('#modal_select_metrica').attr('index', $(event).attr('index'));
+        $("#modal_select_metrica .filter-option-inner-inner").html('non_metric')
+    }else{
         $("#modal_select_metrica .filter-option-inner-inner").html($(event.currentTarget).attr('metrica'))
         $('#modal_select_metrica').attr('index', $(event.currentTarget).attr('index'));
-        $("#modal_select_metrica").modal('show');
+    }
+    $("#modal_select_metrica").modal('show');
+}
+$('body').on('click', 'div.block', function(event) {
+    if (event.target.children.length != 0){ 
+        open_modal_edit_area(event);    
     }
 });
 
@@ -513,35 +526,43 @@ $('.sub').on('click', function(e){
 function open_first_screen(e){
     if(e.target.innerHTML == undefined){
         localStorage.setItem('product',"VMmanager");
-        g_product = "VMmanager";
+        global_product = "VMmanager";
     }else{
         localStorage.setItem('product',e.target.innerHTML);
-        g_product = e.target.innerHTML;
+        global_product = e.target.innerHTML;
     }
     $('a').removeClass('active_prod');
     $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
     get_screen();
-
-    function set_this_page(){
-        localStorage.setItem('id_this_page', $('#list_screen .open_screen').attr('id_img'));
-        localStorage.setItem('name_this_page', $('#list_screen .open_screen').attr('name_img'));
-        localStorage.setItem('ext_this_page', $('#list_screen .open_screen').attr('ext_img'));
-        $('.block').remove();
-        $('canvas').css('background', 'url(http://localhost/'+g_product+'/'+ localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
-        $('canvas').css('background-size','100% 100%');
-        get_area_server();
-        set_active_page();
-    }
-    $('#list_screen').bind("DOMSubtreeModified",set_this_page)
+    // $('#list_screen').bind("DOMSubtreeModified",set_this_page)
+    $('#list_screen').one("DOMNodeInserted", function (event) { set_this_page() });
 }
+
+
+
+function set_this_page(){
+    localStorage.setItem('id_this_page', $('#list_screen .open_screen').attr('id_img'));
+    localStorage.setItem('name_this_page', $('#list_screen .open_screen').attr('name_img'));
+    localStorage.setItem('ext_this_page', $('#list_screen .open_screen').attr('ext_img'));
+    $('.block').remove();
+    $('canvas').css('background', 'url(http://localhost/'+global_product+'/'+ localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
+    $('canvas').css('background-size','100% 100%');
+    get_area_server();
+    set_active_page();
+}
+
 
 $(function(){
     if(localStorage.getItem('product')!=null){
-        let g_product = localStorage.getItem('product');
+        let global_product = localStorage.getItem('product');
         $('a:contains("'+localStorage.getItem('product')+'")').addClass('active_prod');
     }else{
-        let g_product = 'VMmanager';
+        let global_product = 'VMmanager';
         open_first_screen($('a:contains("VMmanager")')[0])
     }
     
 })
+
+$(function(){
+    $("#page_background").fileinput();
+});
