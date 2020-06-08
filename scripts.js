@@ -351,7 +351,7 @@ $('body').on('click', '.open_screen', function() {
     localStorage.setItem('name_this_page', event.target.getAttribute("name_img"));
     localStorage.setItem('ext_this_page', event.target.getAttribute("ext_img"));
     $('.block').remove();
-    $('canvas').css('background', 'url(http://localhost/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
+    $('canvas').css('background', 'url(file:///var/docker/images/test_product/'+event.target.getAttribute("id_img")+'.'+event.target.getAttribute("ext_img"));
     $('canvas').css('background-size','100% 100%');
     get_area_server();
     set_active_page();
@@ -385,7 +385,7 @@ function delete_screen(){
 // Сохранение открытого скрина при перезагрузке
 $(function(){
     if(localStorage.getItem('id_this_page') != null){
-        $('canvas').css('background', 'url(http://localhost/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
+        $('canvas').css('background', 'url(file:///var/docker/images/test_product/'+localStorage.getItem('id_this_page')+'.'+localStorage.getItem('ext_this_page'));
         $('canvas').css('background-size','100% 100%');
     }
 })
